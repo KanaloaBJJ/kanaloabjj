@@ -1,1 +1,5 @@
-const C='kanaloa-bjj-v10';const A=['./','./index.html','./manifest.webmanifest','./icon.svg','./supabase-config.js'];self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(A)).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).then(r=>{caches.open(C).then(x=>x.put(e.request,r.clone()));return r}).catch(()=>caches.match('./index.html'))))});
+const CACHE_NAME='kanaloa-bjj-v10-1';
+const ASSETS=['./','./index.html','./manifest.webmanifest','./supabase-config.js','./icon.svg'];
+self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS)))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request).then(r=>{let x=r.clone();caches.open(CACHE_NAME).then(c=>c.put(e.request,x));return r}).catch(()=>caches.match(e.request)))});

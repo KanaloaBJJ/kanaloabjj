@@ -72,14 +72,14 @@ function card(s){let p=prog(s),l=last(s.id);return `<div class="student" style="
 async function studentHistory(id){let s=students.find(x=>x.id===id);let rows=att.filter(a=>a.student_id===id).sort((a,b)=>b.date.localeCompare(a.date));$("students").innerHTML=`<div class="card"><button class="secondary" onclick="render()">← Volver</button><h2>${esc(s.name)}</h2><p>${s.belt} · grado ${s.grade}</p><h3>Historial de asistencias (${rows.length})</h3>${rows.map(a=>`<div class="student"><span><b>${a.date}</b><br><span class="small">${a.slot==="morning"?"🌅 Mañana":"🌇 Tarde"}</span></span></div>`).join("")||"<p class='muted'>Sin asistencias.</p>"}</div>`}
 async function classHistory(d){let rows=att.filter(a=>a.date===d);let names=id=>students.find(s=>s.id===id)?.name||"Alumno";$("history").innerHTML=`<div class="card"><button class="secondary" onclick="render()">← Volver</button><h2>Clase · ${d}</h2><h3>🌅 Mañana</h3>${rows.filter(a=>a.slot==="morning").map(a=>`<div class="student"><b>${esc(names(a.student_id))}</b></div>`).join("")||"<p class='muted'>Sin alumnos.</p>"}<h3>🌇 Tarde</h3>${rows.filter(a=>a.slot==="afternoon").map(a=>`<div class="student"><b>${esc(names(a.student_id))}</b></div>`).join("")||"<p class='muted'>Sin alumnos.</p>"}</div>`}
 async function toggle(id){let e=att.find(a=>a.student_id===id&&a.date===date&&a.slot===slot);let q=e?await sb.from("attendance").delete().eq("id",e.id):await sb.from("attendance").insert({student_id:id,date,slot});if(q.error)toast(q.error.message);else{await load();render()}}
-async function addStudent(){let name=prompt("Nombre del alumno:");if(!name?.trim())return;let belt=prompt("Cinturón (Blanco, Azul, Morado, Marrón o Negro):","Blanco")||"Blanco";let gv=prompt("Grado 0-4 (0 = sin grados):","0");let grade=Math.max(0,Math.min(4,parseInt(gv,10)||0));let q=await sb.from("students").insert({name:name.trim(),belt,grade});if(q.error)toast(q.error.message);else{await load();render()}}
-async function edit(id){let s=students.find(x=>x.id===id);let belt=prompt("Cinturón:",s.belt)||s.belt;let gv=prompt("Grado 0-4 (0 = sin grados):",s.grade);let grade=Math.max(0,Math.min(4,Number.isNaN(parseInt(gv,10))?s.grade:parseInt(gv,10)));let q=await sb.from("students").update({belt,grade}).eq("id",id);if(q.error)toast(q.error.message);else{await load();render()}}
+function addStudent(){ window.openV10StudentForm(null); }
+function edit(id){ let s=students.find(x=>x.id===id); window.openV10StudentForm(s); }
 async function saveRules(){for(let b of belts){let v=[0,1,2,3].map(i=>parseInt($("r"+b+i).value,10)||1);let q=await sb.from("belt_rules").upsert({belt:b,grade1:v[0],grade2:v[1],grade3:v[2],grade4:v[3]});if(q.error)return toast(q.error.message)}let q=await sb.from("app_settings").upsert({id:1,inactivity_days:parseInt($("inact").value,10)||21});if(q.error)toast(q.error.message);else{await load();toast("Reglas guardadas.",true);render()}}
 async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=10.1",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
@@ -159,13 +159,13 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
  document.querySelectorAll('#v10-grades .v10-choice').forEach(b=>b.onclick=()=>{grade=Number(b.dataset.value);choose('v10-grades',grade)});
  form.addEventListener('submit',async e=>{
   e.preventDefault(); err.textContent='';
-  const c=window.bjjSupabaseClient;if(!c){err.textContent='No hay conexión con Supabase.';return}
+  const c=window.sb||sb||window.bjjSupabaseClient;if(!c){err.textContent='No hay conexión con Supabase.';return}
   const fn=first.value.trim(), ln=last.value.trim(); if(!fn){err.textContent='Escribe el nombre.';return}
-  const payload={name:(fn+' '+ln).trim(),belt,grade};
+  const payload={name:(fn+' '+ln).trim(),first_name:fn,last_name:ln,belt,grade};
   let q=sid.value?c.from('students').update(payload).eq('id',sid.value):c.from('students').insert(payload);
   const {error}=await q;
   if(error){err.textContent='No se pudo guardar: '+error.message;return}
-  close(); location.reload();
+  close(); if(typeof load==='function'){await load();} if(typeof render==='function'){render();}
  });
  window.openV10StudentForm=openStudent;
 
