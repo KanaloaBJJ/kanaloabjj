@@ -1,6 +1,6 @@
 <!doctype html><html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg">
+<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.2"><link rel="icon" href="icon.svg?v=10.2">
 <title>Kanaloa BJJ</title>
 <style>
 body{margin:0;font-family:system-ui;background:#f4f5f7;color:#111827}header{background:#111827;color:#fff;padding:16px;position:sticky;top:0;z-index:2}header h1{margin:0;font-size:21px}
@@ -32,6 +32,27 @@ body.v8-auth-pending > *:not(#v8-auth-overlay){visibility:hidden}
 .v10-choice.selected{outline:3px solid #111827;border-color:#111827}
 #v10-save{width:100%;border:0;background:#111827;color:#fff;border-radius:12px;padding:14px;font-size:16px;font-weight:800;margin-top:12px}
 #v10-error{color:#b42318;min-height:20px;margin-top:8px}
+</style>
+
+<style id="v10-2-grade-style">
+#v10-grades{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+#v10-grades .v10-choice{
+  aspect-ratio:1/1;
+  min-width:0;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  font-weight:900;
+  border-radius:12px;
+}
+#v10-grades .v10-choice.selected{
+  background:#111827;
+  color:#fff;
+  outline:none;
+  border-color:#111827;
+}
 </style>
 </head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
 <h1>🥋 Kanaloa BJJ</h1><p>Acceso privado de la academia</p>
@@ -79,7 +100,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=10.1",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=10.2",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
