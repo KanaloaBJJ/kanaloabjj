@@ -19,7 +19,21 @@ table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px so
 #v8-auth-login{width:100%;padding:13px;border:0;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;background:#111827;color:#fff}
 #v8-auth-error{color:#b42318;min-height:20px;margin:6px 0 10px;font-size:14px}
 body.v8-auth-pending > *:not(#v8-auth-overlay){visibility:hidden}
-</style></head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
+</style>
+<style id="v10-student-style">
+#v10-student-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:130000;display:none;align-items:flex-end;justify-content:center}
+#v10-student-sheet{background:#fff;width:min(680px,100%);max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:22px;box-sizing:border-box}
+#v10-student-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+#v10-student-close{border:0;background:#eee;border-radius:10px;padding:8px 12px;font-size:18px}
+.v10-field{margin:16px 0}.v10-field label{display:block;font-weight:700;margin-bottom:7px}
+.v10-field input{width:100%;box-sizing:border-box;padding:13px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px}
+.v10-choice-row{display:flex;flex-wrap:wrap;gap:8px}
+.v10-choice{border:1px solid #d0d5dd;background:#fff;border-radius:12px;padding:11px 13px;font-weight:700;cursor:pointer}
+.v10-choice.selected{outline:3px solid #111827;border-color:#111827}
+#v10-save{width:100%;border:0;background:#111827;color:#fff;border-radius:12px;padding:14px;font-size:16px;font-weight:800;margin-top:12px}
+#v10-error{color:#b42318;min-height:20px;margin-top:8px}
+</style>
+</head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
 <h1>🥋 Kanaloa BJJ</h1><p>Acceso privado de la academia</p>
 <form id="v8-auth-form">
 <label>Email</label><input id="v8-auth-email" type="email" autocomplete="username" value="kanaloacalafell@gmail.com" required>
@@ -90,4 +104,80 @@ async function boot(){
 }
 if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",()=>setTimeout(boot,100)); else setTimeout(boot,100);
 })();
-</script></body></html>
+</script>
+<div id="v10-student-modal">
+ <div id="v10-student-sheet">
+  <div id="v10-student-head"><h2 id="v10-form-title">Nuevo alumno</h2><button id="v10-student-close">✕</button></div>
+  <form id="v10-student-form">
+   <input type="hidden" id="v10-student-id">
+   <div class="v10-field"><label>Nombre</label><input id="v10-first-name" required autocomplete="given-name"></div>
+   <div class="v10-field"><label>Apellidos</label><input id="v10-last-name" autocomplete="family-name"></div>
+   <div class="v10-field"><label>Cinturón</label>
+    <div class="v10-choice-row" id="v10-belts">
+     <button type="button" class="v10-choice" data-value="Blanco">⚪ Blanco</button>
+     <button type="button" class="v10-choice" data-value="Azul">🔵 Azul</button>
+     <button type="button" class="v10-choice" data-value="Morado">🟣 Morado</button>
+     <button type="button" class="v10-choice" data-value="Marrón">🟤 Marrón</button>
+     <button type="button" class="v10-choice" data-value="Negro">⚫ Negro</button>
+    </div>
+   </div>
+   <div class="v10-field"><label>Grados</label>
+    <div class="v10-choice-row" id="v10-grades">
+     <button type="button" class="v10-choice" data-value="0">0</button>
+     <button type="button" class="v10-choice" data-value="1">1</button>
+     <button type="button" class="v10-choice" data-value="2">2</button>
+     <button type="button" class="v10-choice" data-value="3">3</button>
+     <button type="button" class="v10-choice" data-value="4">4</button>
+    </div>
+   </div>
+   <div id="v10-error"></div>
+   <button id="v10-save" type="submit">Guardar alumno</button>
+  </form>
+ </div>
+</div>
+
+<script id="v10-student-form-script">
+(function(){
+ const modal=document.getElementById('v10-student-modal'), form=document.getElementById('v10-student-form');
+ const first=document.getElementById('v10-first-name'), last=document.getElementById('v10-last-name'), sid=document.getElementById('v10-student-id');
+ const err=document.getElementById('v10-error'), title=document.getElementById('v10-form-title');
+ let belt='Blanco', grade=0;
+ function choose(group,val){
+  document.querySelectorAll('#'+group+' .v10-choice').forEach(b=>b.classList.toggle('selected',String(b.dataset.value)===String(val)));
+ }
+ function openStudent(s){
+  sid.value=s?.id||''; first.value=s?.first_name||s?.name?.split(' ')[0]||'';
+  last.value=s?.last_name||((s?.name||'').split(' ').slice(1).join(' '));
+  belt=s?.belt||'Blanco'; grade=Number(s?.grade??0);
+  choose('v10-belts',belt);choose('v10-grades',grade);
+  title.textContent=s?.id?'Editar alumno':'Nuevo alumno';err.textContent='';modal.style.display='flex';
+ }
+ function close(){modal.style.display='none'}
+ document.getElementById('v10-student-close').onclick=close;
+ modal.addEventListener('click',e=>{if(e.target===modal)close()});
+ document.querySelectorAll('#v10-belts .v10-choice').forEach(b=>b.onclick=()=>{belt=b.dataset.value;choose('v10-belts',belt)});
+ document.querySelectorAll('#v10-grades .v10-choice').forEach(b=>b.onclick=()=>{grade=Number(b.dataset.value);choose('v10-grades',grade)});
+ form.addEventListener('submit',async e=>{
+  e.preventDefault(); err.textContent='';
+  const c=window.bjjSupabaseClient;if(!c){err.textContent='No hay conexión con Supabase.';return}
+  const fn=first.value.trim(), ln=last.value.trim(); if(!fn){err.textContent='Escribe el nombre.';return}
+  const payload={name:(fn+' '+ln).trim(),belt,grade};
+  let q=sid.value?c.from('students').update(payload).eq('id',sid.value):c.from('students').insert(payload);
+  const {error}=await q;
+  if(error){err.textContent='No se pudo guardar: '+error.message;return}
+  close(); location.reload();
+ });
+ window.openV10StudentForm=openStudent;
+
+ // Intercept likely "new student" controls by visible label, without affecting other controls.
+ document.addEventListener('click',e=>{
+   const el=e.target.closest('button,a');
+   if(!el) return;
+   const t=(el.textContent||'').trim().toLowerCase();
+   if(/nuevo alumno|añadir alumno|agregar alumno|alta alumno|alta de alumno/.test(t)){
+     e.preventDefault();e.stopPropagation();openStudent(null);
+   }
+ },true);
+})();
+</script>
+</body></html>
