@@ -1,115 +1,91 @@
-<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111827">
-<meta name="description" content="BJJ Academy Manager - asistencia, progresión y ranking">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg">
-<title>BJJ Academy Manager</title>
+<!doctype html><html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg">
+<title>BJJ Academy Manager V7</title>
 <style>
-:root{--bg:#f4f6f8;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#111827;--ok:#15803d;--warn:#b45309;--danger:#b91c1c}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{background:var(--accent);color:#fff;padding:18px 16px calc(18px + env(safe-area-inset-top));position:sticky;top:0;z-index:5}header h1{margin:0;font-size:20px}header small{opacity:.75}
-main{max-width:900px;margin:auto;padding:14px 14px 90px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 2px #00000008}
-.stat b{display:block;font-size:25px}.muted{color:var(--muted)}h2{font-size:17px;margin:4px 0 12px}
-button{border:0;border-radius:10px;padding:10px 12px;background:#111827;color:#fff;font-weight:650;cursor:pointer}button.secondary{background:#eef0f3;color:#111827}button.danger{background:#fee2e2;color:#991b1b}button.ok{background:#dcfce7;color:#166534}
-input,select{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;background:#fff;font:inherit}label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}
-.row{display:flex;gap:8px;align-items:center}.between{justify-content:space-between}.session{display:flex;gap:8px;margin:8px 0 12px}.session button{flex:1}.selected{outline:3px solid #cbd5e1}
-.student{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}.student:last-child{border-bottom:0}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#e5e7eb;font-weight:800}.info{flex:1}.presence{min-width:92px}
-.badge{display:inline-block;padding:3px 7px;border-radius:999px;background:#f3f4f6;font-size:11px}.progress{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden}.progress>i{display:block;height:100%;background:#111827}
-.alert{border-left:4px solid var(--warn);padding:10px;background:#fffbeb;border-radius:8px;margin:8px 0}.alert.danger{border-left-color:var(--danger);background:#fef2f2}.alert.ok{border-left-color:var(--ok);background:#f0fdf4}
-.empty{text-align:center;padding:28px;color:var(--muted)}.hidden{display:none!important}
-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;z-index:10;padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;border:0;background:none;padding:10px 2px;font-size:11px;color:var(--muted)}nav button.active{color:var(--text);font-weight:800}
-.toast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:20}
-.rank{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.ranknum{font-size:20px;font-weight:800;text-align:center}
-@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}nav{position:static;max-width:900px;margin:auto;border:0}main{padding-bottom:30px}}
-</style>
-</head>
-<body>
-<header><h1>🥋 BJJ Academy Manager</h1><small>Asistencia · Progresión · Ranking</small></header>
-<main>
-<section id="dashboard"></section>
-<section id="attendance" class="hidden"></section>
-<section id="students" class="hidden"></section>
-<section id="history" class="hidden"></section>
-<section id="ranking" class="hidden"></section>
-<section id="rules" class="hidden"></section>
-</main>
-<nav>
-<button data-tab="dashboard">🏠<br>Inicio</button>
-<button data-tab="attendance">✅<br>Lista</button>
-<button data-tab="students">👥<br>Alumnos</button>
-<button data-tab="history">📜<br>Historial</button>
-<button data-tab="ranking">🏆<br>Ranking</button>
-<button data-tab="rules">⚙️<br>Reglas</button>
-</nav>
-<div id="toast" class="toast"></div>
+body{margin:0;font-family:system-ui;background:#f4f5f7;color:#111827}header{background:#111827;color:#fff;padding:16px;position:sticky;top:0;z-index:2}header h1{margin:0;font-size:21px}
+main{max-width:900px;margin:auto;padding:14px 14px 85px}.card{background:white;border:1px solid #e5e7eb;border-radius:16px;padding:14px;margin:10px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.stat{font-size:27px;font-weight:800}.muted{color:#6b7280}.small{font-size:12px}button,input{font:inherit}button{border:0;border-radius:10px;padding:10px 12px;background:#111827;color:white}button.secondary{background:#e5e7eb;color:#111827}button.danger{background:#fee2e2;color:#991b1b}input{padding:10px;border:1px solid #e5e7eb;border-radius:10px;width:100%;box-sizing:border-box}label{display:block;font-size:12px;color:#6b7280;margin:8px 0 4px}
+.student{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #eee}.student:last-child{border-bottom:0}.hidden{display:none!important}
+.nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #ddd;display:flex;justify-content:center;z-index:5}.nav button{flex:1;max-width:130px;background:transparent;color:#374151;font-size:12px;border-radius:0}.nav button.active{font-weight:800}
+.auth{max-width:420px;margin:9vh auto}.notice{background:#fef3c7;color:#78350f;padding:10px;border-radius:10px;margin:8px 0}.success{background:#dcfce7;color:#166534;padding:10px;border-radius:10px;margin:8px 0}
+table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #eee;text-align:left}
+</style><style id="v8-auth-style">
+#v8-auth-overlay{position:fixed;inset:0;z-index:100000;background:#f5f7fb;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
+#v8-auth-card{width:min(420px,100%);background:#fff;border-radius:20px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.14);box-sizing:border-box}
+#v8-auth-card h1{margin:0 0 8px;font-size:26px} #v8-auth-card p{margin:0 0 20px;color:#667085}
+#v8-auth-card label{display:block;font-size:14px;font-weight:600;margin-top:10px}
+#v8-auth-card input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid #d0d5dd;border-radius:10px;margin:6px 0 10px;font-size:16px}
+#v8-auth-login{width:100%;padding:13px;border:0;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;background:#111827;color:#fff}
+#v8-auth-error{color:#b42318;min-height:20px;margin:6px 0 10px;font-size:14px}
+body.v8-auth-pending > *:not(#v8-auth-overlay){visibility:hidden}
+</style></head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
+<h1>🥋 BJJ Academy</h1><p>Acceso privado de la academia</p>
+<form id="v8-auth-form">
+<label>Email</label><input id="v8-auth-email" type="email" autocomplete="username" value="kanaloacalafell@gmail.com" required>
+<label>Contraseña</label><input id="v8-auth-password" type="password" autocomplete="current-password" required>
+<div id="v8-auth-error"></div><button id="v8-auth-login" type="submit">Entrar</button>
+</form></div></div>
+<header><h1>🥋 BJJ Academy Manager V7</h1><small id="sub">Base de datos online</small></header>
+<div id="auth" class="auth card hidden"><h2>Acceso</h2><p class="muted">Los datos se comparten entre los dispositivos que inicien sesión.</p>
+<label>Email</label><input id="email" type="email"><label>Contraseña</label><input id="password" type="password">
+<div class="row" style="margin-top:12px"><button id="login">Entrar</button><button class="secondary" id="signup">Crear cuenta</button></div><div id="authmsg" class="small muted"></div></div>
+<main id="app" class="hidden"><div id="dashboard"></div><div id="attendance" class="hidden"></div><div id="students" class="hidden"></div><div id="history" class="hidden"></div><div id="ranking" class="hidden"></div><div id="rules" class="hidden"></div></main>
+<nav id="nav" class="nav hidden"><button data-v="dashboard">🏠<br>Inicio</button><button data-v="attendance">✅<br>Lista</button><button data-v="students">👥<br>Alumnos</button><button data-v="history">📚<br>Historial</button><button data-v="ranking">🏆<br>Ranking</button><button data-v="rules">⚙️<br>Ajustes</button></nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script>
 <script>
-const KEY="bjj_academy_v6";
-const belts=["Blanco","Azul","Morado","Marrón","Negro"];
-const defaultState={students:[],sessions:[],rules:{Blanco:[30,30,30,30],Azul:[40,40,40,40],Morado:[50,50,50,50],Marrón:[60,60,60,60],Negro:[80,80,80,80]},inactivityDays:21,settings:{sessionNames:{morning:"Mañana",afternoon:"Tarde"}}};
-let state=JSON.parse(localStorage.getItem(KEY)||"null")||defaultState;
-let selectedDate=new Date().toISOString().slice(0,10),selectedSlot="morning";
-function save(){localStorage.setItem(KEY,JSON.stringify(state))}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
-function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function toast(s){let t=document.getElementById("toast");t.textContent=s;t.style.display="block";setTimeout(()=>t.style.display="none",1700)}
-function initials(n){return n.split(/\s+/).map(x=>x[0]).slice(0,2).join("").toUpperCase()}
-function totalSessions(id){return state.sessions.filter(s=>s.present.includes(id)).length}
-function lastDate(id){let d=state.sessions.filter(s=>s.present.includes(id)).map(s=>s.date).sort();return d.at(-1)||null}
-function daysSince(d){return d?Math.max(0,Math.floor((Date.now()-new Date(d+"T23:59:59"))/86400000)):99999}
-function levelFor(st){let belt=st.belt||"Blanco",grade=st.grade||1,total=totalSessions(st.id),a=state.rules[belt]||[0,0,0,0],prior=a.slice(0,grade-1).reduce((x,y)=>x+Number(y||0),0),need=Number(a[grade-1]||0),done=Math.max(0,total-prior);return{belt,grade,total,need,done,pct:need?Math.min(100,done/need*100):0}}
-function renderDashboard(){
- let today=new Date().toISOString().slice(0,10),tod=state.sessions.filter(s=>s.date===today),unique=new Set(tod.flatMap(s=>s.present));
- let alerts=state.students.map(st=>({st,l:levelFor(st),days:daysSince(lastDate(st.id))})).filter(x=>x.l.done>=x.l.need||x.days>=state.inactivityDays);
- document.getElementById("dashboard").innerHTML=`<div class="grid">
- <div class="card stat"><span class="muted">Alumnos</span><b>${state.students.length}</b></div>
- <div class="card stat"><span class="muted">Hoy</span><b>${unique.size}</b></div>
- <div class="card stat"><span class="muted">Sesiones</span><b>${state.sessions.length}</b></div>
- <div class="card stat"><span class="muted">Avisos</span><b>${alerts.length}</b></div></div>
- <div class="card"><h2>Acceso rápido</h2><button onclick="showTab('attendance')">Pasar lista</button> <button class="secondary" onclick="showTab('ranking')">Ver ranking</button></div>
- <div class="card"><h2>Avisos</h2>${alerts.length?alerts.map(x=>`<div class="alert ${x.l.done>=x.l.need?'ok':'danger'}"><b>${esc(x.st.name)}</b><br>${x.l.done>=x.l.need?`Ha alcanzado el requisito del ${x.l.grade}º grado de ${esc(x.l.belt)}.`:`Lleva ${x.days} días sin venir.`}</div>`).join(""):'<div class="empty">No hay avisos.</div>'}</div>`;
+const U=window.BJJ_SUPABASE_URL,K=window.BJJ_SUPABASE_PUBLISHABLE_KEY;let sb,students=[],att=[],rules={},settings={inactivity_days:21,academy_name:"BJJ Academy"},view="dashboard",date=new Date().toISOString().slice(0,10),slot="morning";const belts=["Blanco","Azul","Morado","Marrón","Negro"];
+const $=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(x,ok=false){let d=document.createElement("div");d.className=ok?"success":"notice";d.textContent=x;$("app").prepend(d);setTimeout(()=>d.remove(),3000)}
+function showAuth(){ $("auth").classList.remove("hidden");$("app").classList.add("hidden");$("nav").classList.add("hidden")}
+function showConfig(){showAuth();$("authmsg").textContent="Configura primero supabase-config.js con la URL y Publishable key.";$("login").disabled=true;$("signup").disabled=true}
+async function login(){let {error}=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});$("authmsg").textContent=error?.message||""}
+async function signup(){let {error}=await sb.auth.signUp({email:$("email").value.trim(),password:$("password").value});$("authmsg").textContent=error?.message||"Cuenta creada. Revisa el correo si se solicita verificación."}
+async function load(){let [s,a,r,x]=await Promise.all([sb.from("students").select("*").eq("active",true).order("name"),sb.from("attendance").select("*"),sb.from("belt_rules").select("*"),sb.from("app_settings").select("*").eq("id",1).maybeSingle()]);let er=[s,a,r,x].find(q=>q.error);if(er)throw Error(er.error.message);students=s.data||[];att=a.data||[];rules={};(r.data||[]).forEach(q=>rules[q.belt]=[q.grade1,q.grade2,q.grade3,q.grade4]);if(x.data)settings=x.data;$("sub").textContent=settings.academy_name+" · datos online"}
+function t(b){return rules[b]||[30,30,30,30]}function total(id){return att.filter(a=>a.student_id===id).length}function last(id){return att.filter(a=>a.student_id===id).map(a=>a.date).sort().at(-1)||null}
+function prog(s){let z=t(s.belt),prior=z.slice(0,s.grade-1).reduce((a,b)=>a+b,0),need=z[s.grade-1]||0,done=Math.max(0,total(s.id)-prior);return{done,need,pct:need?Math.min(100,Math.round(done/need*100)):100}}
+function days(d){return d?Math.floor((Date.now()-new Date(d+"T00:00:00"))/86400000):null}
+function setView(v){view=v;["dashboard","attendance","students","history","ranking","rules"].forEach(x=>$(x).classList.toggle("hidden",x!==v));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.v===v));render()}
+function render(){
+ $("dashboard").innerHTML=`<div class="grid"><div class="card"><div class="muted">Alumnos</div><div class="stat">${students.length}</div></div><div class="card"><div class="muted">Asistencias hoy</div><div class="stat">${att.filter(a=>a.date===new Date().toISOString().slice(0,10)).length}</div></div><div class="card"><div class="muted">Total sesiones</div><div class="stat">${att.length}</div></div></div><div class="card"><h3>🚨 Avisos</h3>${students.map(s=>{let p=prog(s),d=days(last(s.id));return p.pct>=100||d>=settings.inactivity_days?`<div class="student"><span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade}</span></span><span>${p.pct>=100?"Grado alcanzado":d+" días sin venir"}</span></div>`:""}).join("")||"<p class='muted'>Sin avisos.</p>"}</div><div class="card"><button onclick="logout()">Cerrar sesión</button></div>`;
+ $("attendance").innerHTML=`<div class="card"><h2>Pasar lista</h2><label>Fecha</label><input id="ad" type="date" value="${date}"><label>Sesión</label><div class="row"><button onclick="slot='morning';render()">🌅 Mañana</button><button onclick="slot='afternoon';render()">🌇 Tarde</button></div><p class="small muted">Marca mañana y tarde por separado. Ambas = 2 asistencias.</p></div><div class="card">${students.map(s=>{let ok=att.some(a=>a.student_id===s.id&&a.date===date&&a.slot===slot);return `<div class="student"><span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade}</span></span><button class="${ok?"secondary":""}" onclick="toggle('${s.id}')">${ok?"✅ Presente":"Marcar"}</button></div>`}).join("")}</div>`;$("ad").onchange=e=>{date=e.target.value;render()};
+ $("students").innerHTML=`<div class="card"><div class="row between"><h2>Alumnos</h2><button onclick="addStudent()">+ Añadir</button></div><input id="search" placeholder="Buscar..."><div id="sl">${students.map(card).join("")}</div></div>`;$("search").oninput=e=>$("sl").innerHTML=students.filter(s=>s.name.toLowerCase().includes(e.target.value.toLowerCase())).map(card).join("");
+ let by={};att.forEach(a=>(by[a.date]??=[]).push(a));$("history").innerHTML=`<div class="card"><h2>Historial</h2>${Object.keys(by).sort().reverse().map(d=>`<div class="student"><span><b>${d}</b><br><span class="small">🌅 ${by[d].filter(a=>a.slot==="morning").length} · 🌇 ${by[d].filter(a=>a.slot==="afternoon").length}</span></span><b>${by[d].length}</b></div>`).join("")||"<p class='muted'>Sin datos.</p>"}</div>`;
+ let mo=new Date().toISOString().slice(0,7),m=$("rm")?.value||mo,c={};att.filter(a=>a.date.startsWith(m)).forEach(a=>c[a.student_id]=(c[a.student_id]||0)+1);let rr=students.map(s=>({...s,n:c[s.id]||0})).sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name));$("ranking").innerHTML=`<div class="card"><h2>🏆 Ranking mensual</h2><label>Mes</label><input id="rm" type="month" value="${m}"><p class="small muted">Cada sesión cuenta 1; mañana+tarde = 2.</p><table><tr><th>#</th><th>Alumno</th><th>Sesiones</th></tr>${rr.map((s,i)=>`<tr><td>${i<3?["🥇","🥈","🥉"][i]:i+1}</td><td>${esc(s.name)}</td><td><b>${s.n}</b></td></tr>`).join("")}</table></div>`;$("rm").onchange=render;
+ $("rules").innerHTML=`<div class="card"><h2>⚙️ Reglas</h2><p class="small muted">Los valores son de demostración; configura los de tu academia.</p>${belts.map(b=>`<div class="card"><b>${b}</b><div class="grid">${t(b).map((v,i)=>`<div><label>Grado ${i+1}</label><input id="r${b}${i}" type="number" value="${v}"></div>`).join("")}</div></div>`).join("")}<label>Días para aviso de inactividad</label><input id="inact" type="number" value="${settings.inactivity_days}"><br><br><button onclick="saveRules()">Guardar en la nube</button><button class="secondary" onclick="logout()">Cerrar sesión</button></div>`;
 }
-function renderAttendance(){
- let s=state.sessions.find(x=>x.date===selectedDate&&x.slot===selectedSlot),present=new Set(s?.present||[]);
- document.getElementById("attendance").innerHTML=`<div class="card"><div class="row"><div style="flex:1"><label>Fecha</label><input type="date" value="${selectedDate}" onchange="selectedDate=this.value;renderAttendance()"></div></div>
- <label style="margin-top:10px">Sesión</label><div class="session"><button class="${selectedSlot==='morning'?'selected':''}" onclick="selectedSlot='morning';renderAttendance()">🌅 Mañana</button><button class="${selectedSlot==='afternoon'?'selected':''}" onclick="selectedSlot='afternoon';renderAttendance()">🌆 Tarde</button></div></div>
- <div class="card"><div class="row between"><h2>Alumnos</h2><button class="ok" onclick="saveSession()">Guardar</button></div>
- ${state.students.length?state.students.map(st=>`<div class="student"><div class="avatar">${initials(st.name)}</div><div class="info"><b>${esc(st.name)}</b><br><span class="muted">${esc(st.belt)} · ${st.grade}º · ${totalSessions(st.id)} sesiones</span></div><button class="presence ${present.has(st.id)?'ok':'secondary'}" data-id="${st.id}" onclick="this.classList.toggle('ok');this.classList.toggle('secondary');this.textContent=this.classList.contains('ok')?'✓ Presente':'Ausente'">${present.has(st.id)?'✓ Presente':'Ausente'}</button></div>`).join(""):'<div class="empty">Añade alumnos primero.</div>'}</div>`;
+function card(s){let p=prog(s),l=last(s.id);return `<div class="student"><span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade} · ${p.done}/${p.need} · ${l?"última "+l:"sin asistencia"}</span></span><button class="secondary" onclick="edit('${s.id}')">Editar</button></div>`}
+async function toggle(id){let e=att.find(a=>a.student_id===id&&a.date===date&&a.slot===slot);let q=e?await sb.from("attendance").delete().eq("id",e.id):await sb.from("attendance").insert({student_id:id,date,slot});if(q.error)toast(q.error.message);else{await load();render()}}
+async function addStudent(){let name=prompt("Nombre del alumno:");if(!name?.trim())return;let q=await sb.from("students").insert({name:name.trim()});if(q.error)toast(q.error.message);else{await load();render()}}
+async function edit(id){let s=students.find(x=>x.id===id);let belt=prompt("Cinturón:",s.belt)||s.belt,grade=Math.max(1,Math.min(4,parseInt(prompt("Grado 1-4:",s.grade),10)||s.grade));let q=await sb.from("students").update({belt,grade}).eq("id",id);if(q.error)toast(q.error.message);else{await load();render()}}
+async function saveRules(){for(let b of belts){let v=[0,1,2,3].map(i=>parseInt($("r"+b+i).value,10)||1);let q=await sb.from("belt_rules").upsert({belt:b,grade1:v[0],grade2:v[1],grade3:v[2],grade4:v[3]});if(q.error)return toast(q.error.message)}let q=await sb.from("app_settings").upsert({id:1,inactivity_days:parseInt($("inact").value,10)||21});if(q.error)toast(q.error.message);else{await load();toast("Reglas guardadas.",true);render()}}
+async function logout(){await sb.auth.signOut()}
+async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
+if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
+</script><script id="v8-auth-script">
+(function(){
+const ALLOWED="kanaloacalafell@gmail.com";
+const overlay=document.getElementById("v8-auth-overlay"), form=document.getElementById("v8-auth-form");
+const email=document.getElementById("v8-auth-email"), pass=document.getElementById("v8-auth-password"), err=document.getElementById("v8-auth-error");
+function show(){document.body.classList.remove("v8-auth-pending");overlay.style.display="none"}
+function login(msg){document.body.classList.add("v8-auth-pending");overlay.style.display="flex";err.textContent=msg||""}
+async function boot(){
+ if(!window.supabase?.createClient){login("No se ha podido cargar el acceso.");return}
+ if(!window.BJJ_SUPABASE_URL||!window.BJJ_SUPABASE_PUBLISHABLE_KEY){login("Falta la configuración de Supabase.");return}
+ const client=window.supabase.createClient(window.BJJ_SUPABASE_URL,window.BJJ_SUPABASE_PUBLISHABLE_KEY);
+ window.bjjSupabaseClient=client;
+ const {data:{session}}=await client.auth.getSession();
+ if(session?.user?.email?.toLowerCase()===ALLOWED) show(); else login("");
+ client.auth.onAuthStateChange((_e,s)=>s?.user?.email?.toLowerCase()===ALLOWED?show():login(""));
+ form.addEventListener("submit",async e=>{
+  e.preventDefault(); err.textContent="";
+  if(email.value.trim().toLowerCase()!==ALLOWED){err.textContent="Usa el email de la academia.";return}
+  const {error}=await client.auth.signInWithPassword({email:email.value.trim(),password:pass.value});
+  if(error) err.textContent="Email o contraseña incorrectos.";
+ });
 }
-function saveSession(){let ids=[...document.querySelectorAll(".presence.ok")].map(b=>b.dataset.id),s=state.sessions.find(x=>x.date===selectedDate&&x.slot===selectedSlot);if(!s){s={id:uid(),date:selectedDate,slot:selectedSlot,present:[]};state.sessions.push(s)}s.present=ids;save();toast("Lista guardada");renderAll()}
-function renderStudents(){
- document.getElementById("students").innerHTML=`<div class="card"><h2>Añadir alumno</h2><div class="grid"><div><label>Nombre y apellidos</label><input id="newName"></div><div><label>Cinturón</label><select id="newBelt">${belts.map(b=>`<option>${b}</option>`).join("")}</select></div><div><label>Grado</label><select id="newGrade">${[1,2,3,4].map(n=>`<option>${n}</option>`).join("")}</select></div></div><br><button onclick="addStudent()">+ Añadir alumno</button></div>
- <div class="card"><h2>Alumnos (${state.students.length})</h2>${state.students.length?state.students.map(st=>{let l=levelFor(st),last=lastDate(st.id);return`<div class="student"><div class="avatar">${initials(st.name)}</div><div class="info"><b>${esc(st.name)}</b><br><span class="badge">${esc(st.belt)} · ${st.grade}º</span> <span class="muted">${l.total} sesiones · última: ${last||'—'}</span><div class="progress" style="margin-top:6px"><i style="width:${l.pct}%"></i></div></div><button class="danger" onclick="deleteStudent('${st.id}')">Eliminar</button></div>`}).join(""):'<div class="empty">No hay alumnos.</div>'}</div>`;
-}
-function addStudent(){let name=document.getElementById("newName").value.trim();if(!name){toast("Escribe un nombre");return}state.students.push({id:uid(),name,belt:document.getElementById("newBelt").value,grade:Number(document.getElementById("newGrade").value)});save();renderAll();toast("Alumno añadido")}
-function deleteStudent(id){if(!confirm("¿Eliminar alumno y sus asistencias?"))return;state.students=state.students.filter(s=>s.id!==id);state.sessions.forEach(s=>s.present=s.present.filter(x=>x!==id));save();renderAll()}
-function renderHistory(){
- let g={};state.sessions.slice().sort((a,b)=>(b.date+b.slot).localeCompare(a.date+a.slot)).forEach(s=>(g[s.date]??=[]).push(s));
- document.getElementById("history").innerHTML=`<div class="card"><h2>Historial</h2>${Object.entries(g).length?Object.entries(g).map(([d,ss])=>`<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>${d}</b>${ss.map(s=>`<div class="row between" style="margin-top:7px"><span>${s.slot==='morning'?'🌅 Mañana':'🌆 Tarde'}</span><span class="badge">${s.present.length} asistentes</span></div>`).join("")}</div>`).join(""):'<div class="empty">No hay sesiones.</div>'}</div>`;
-}
-function ym(date){return date.slice(0,7)}
-function renderRanking(){
- let now=new Date(),month=window.rankMonth||now.toISOString().slice(0,7),counts=Object.fromEntries(state.students.map(s=>[s.id,0]));
- state.sessions.filter(s=>s.date.startsWith(month)).forEach(s=>s.present.forEach(id=>{if(counts[id]!=null)counts[id]++}));
- let rows=state.students.map(s=>({s,n:counts[s.id]})).sort((a,b)=>b.n-a.n||a.s.name.localeCompare(b.s.name)),top=rows.filter(x=>x.n>0);
- document.getElementById("ranking").innerHTML=`<div class="card"><div class="row between"><h2>🏆 Ranking mensual</h2><input style="max-width:165px" type="month" value="${month}" onchange="rankMonth=this.value;renderRanking()"></div><p class="muted">Cada sesión cuenta. Mañana + tarde el mismo día = 2 sesiones.</p>${top.length?top.map((x,i)=>`<div class="rank"><div class="ranknum">${i<3?['🥇','🥈','🥉'][i]:i+1}</div><div><b>${esc(x.s.name)}</b><br><span class="muted">${esc(x.s.belt)} · ${x.s.grade}º</span></div><b>${x.n}</b></div>`).join(""):'<div class="empty">No hay asistencias en este mes.</div>'}</div>`;
-}
-function renderRules(){
- document.getElementById("rules").innerHTML=`<div class="card"><h2>Sesiones necesarias por grado</h2><p class="muted">Valores de demostración: cámbialos según las reglas de tu academia.</p>${belts.map(b=>`<div style="margin:12px 0"><b>${b}</b><div class="grid">${[0,1,2,3].map(i=>`<div><label>${i+1}º grado</label><input type="number" min="0" value="${state.rules[b][i]}" onchange="state.rules['${b}'][${i}]=Number(this.value);save();renderAll()"></div>`).join("")}</div></div>`).join("")}</div>
- <div class="card"><h2>Inactividad</h2><label>Avisar después de días sin venir</label><input type="number" min="1" value="${state.inactivityDays}" onchange="state.inactivityDays=Number(this.value);save();renderAll()"></div>
- <div class="card"><h2>Copias de seguridad</h2><button class="secondary" onclick="exportData()">Exportar datos</button> <button class="secondary" onclick="document.getElementById('importFile').click()">Importar datos</button><input id="importFile" class="hidden" type="file" accept=".json" onchange="importData(event)"></div>`;
-}
-function exportData(){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:"application/json"}));a.download="bjj-academy-backup.json";a.click()}
-function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);save();renderAll();toast("Copia importada")}catch{toast("Archivo no válido")}};r.readAsText(f)}
-function showTab(tab){document.querySelectorAll("main>section").forEach(x=>x.classList.add("hidden"));document.getElementById(tab).classList.remove("hidden");document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab))}
-function renderAll(){renderDashboard();renderAttendance();renderStudents();renderHistory();renderRanking();renderRules()}
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
-renderAll();showTab("dashboard");
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
-</script>
-</body>
-</html>
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",()=>setTimeout(boot,100)); else setTimeout(boot,100);
+})();
+</script></body></html>

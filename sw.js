@@ -1,4 +1,1 @@
-const CACHE="bjj-academy-v6";const ASSETS=["./","./index.html","./manifest.webmanifest","./icon.svg"];
-self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
-self.addEventListener("activate",e=>e.waitUntil(self.clients.claim()));
-self.addEventListener("fetch",e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{const c=res.clone();caches.open(CACHE).then(x=>x.put(e.request,c));return res}).catch(()=>caches.match("./")))));
+const C='bjj-v7';const A=['./','./index.html','./manifest.webmanifest','./icon.svg','./supabase-config.js'];self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(A)).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).then(r=>{caches.open(C).then(x=>x.put(e.request,r.clone()));return r}).catch(()=>caches.match('./index.html'))))});
