@@ -1,4 +1,4 @@
-const CACHE_NAME='kanaloa-bjj-v10-2';
+const CACHE_NAME='kanaloa-bjj-v10-3';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./supabase-config.js','./icon.svg'];
 self.addEventListener('install',e=>{
   self.skipWaiting();

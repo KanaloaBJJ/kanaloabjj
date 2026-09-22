@@ -1,6 +1,6 @@
 <!doctype html><html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.2"><link rel="icon" href="icon.svg?v=10.2">
+<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.3"><link rel="icon" href="icon.svg?v=10.3">
 <title>Kanaloa BJJ</title>
 <style>
 body{margin:0;font-family:system-ui;background:#f4f5f7;color:#111827}header{background:#111827;color:#fff;padding:16px;position:sticky;top:0;z-index:2}header h1{margin:0;font-size:21px}
@@ -54,6 +54,21 @@ body.v8-auth-pending > *:not(#v8-auth-overlay){visibility:hidden}
   border-color:#111827;
 }
 </style>
+
+<style id="v10-3-delete-style">
+#v10-delete{
+  width:100%;
+  border:1px solid #fecaca;
+  background:#fee2e2;
+  color:#991b1b;
+  border-radius:12px;
+  padding:14px;
+  font-size:16px;
+  font-weight:800;
+  margin-top:10px;
+}
+#v10-delete.hidden{display:none!important}
+</style>
 </head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
 <h1>🥋 Kanaloa BJJ</h1><p>Acceso privado de la academia</p>
 <form id="v8-auth-form">
@@ -100,7 +115,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=10.2",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=10.3",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
@@ -153,6 +168,7 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
    </div>
    <div id="v10-error"></div>
    <button id="v10-save" type="submit">Guardar alumno</button>
+    <button id="v10-delete" class="hidden" type="button">🗑️ Eliminar alumno</button>
   </form>
  </div>
 </div>
@@ -171,7 +187,7 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
   last.value=s?.last_name||((s?.name||'').split(' ').slice(1).join(' '));
   belt=s?.belt||'Blanco'; grade=Number(s?.grade??0);
   choose('v10-belts',belt);choose('v10-grades',grade);
-  title.textContent=s?.id?'Editar alumno':'Nuevo alumno';err.textContent='';modal.style.display='flex';
+  title.textContent=s?.id?'Editar alumno':'Nuevo alumno';document.getElementById('v10-delete').classList.toggle('hidden',!s?.id);err.textContent='';modal.style.display='flex';
  }
  function close(){modal.style.display='none'}
  document.getElementById('v10-student-close').onclick=close;
