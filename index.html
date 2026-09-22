@@ -1,6 +1,6 @@
 <!doctype html><html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.4"><link rel="icon" type="image/png" href="icon-192.png?v=10.6.1">
+<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.4"><link rel="icon" type="image/png" href="icon-192.png?v=10.7">
 <title>Kanaloa BJJ</title>
 <style>
 body{margin:0;font-family:system-ui;background:#f4f5f7;color:#111827}header{background:#111827;color:#fff;padding:16px;position:sticky;top:0;z-index:2}header h1{margin:0;font-size:21px}
@@ -77,15 +77,28 @@ body.v8-auth-pending > *:not(#v8-auth-overlay){visibility:hidden}
 header .brand-head{display:flex;align-items:center;gap:11px}
 header .brand-head h1{margin:0}
 </style>
+
+<style id="v10-7-session-style">
+.session-active{
+  background:#16a34a!important;
+  color:white!important;
+  font-weight:900!important;
+  transform:scale(1.03);
+}
+.session-inactive{
+  background:#e5e7eb!important;
+  color:#111827!important;
+}
+</style>
 </head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
-<img id="v8-auth-logo" class="brand-logo" src="kanaloa-logo.png?v=10.6.1" alt="Kanaloa Fight Academy">
+<img id="v8-auth-logo" class="brand-logo" src="kanaloa-logo.png?v=10.7" alt="Kanaloa Fight Academy">
 <h1>Kanaloa BJJ</h1><p>Acceso privado de la academia</p>
 <form id="v8-auth-form">
 <label>Email</label><input id="v8-auth-email" type="email" autocomplete="username" value="kanaloacalafell@gmail.com" required>
 <label>Contraseña</label><input id="v8-auth-password" type="password" autocomplete="current-password" required>
 <div id="v8-auth-error"></div><button id="v8-auth-login" type="submit">Entrar</button>
 </form></div></div>
-<header><div class="brand-head"><img id="header-logo" class="brand-logo" src="kanaloa-logo.png?v=10.6.1" alt=""><div><h1>Kanaloa BJJ</h1><small id="sub">Base de datos online</small></div></div></header>
+<header><div class="brand-head"><img id="header-logo" class="brand-logo" src="kanaloa-logo.png?v=10.7" alt=""><div><h1>Kanaloa BJJ</h1><small id="sub">Base de datos online</small></div></div></header>
 <div id="auth" class="auth card hidden"><h2>Acceso</h2><p class="muted">Los datos se comparten entre los dispositivos que inicien sesión.</p>
 <label>Email</label><input id="email" type="email"><label>Contraseña</label><input id="password" type="password">
 <div class="row" style="margin-top:12px"><button id="login">Entrar</button><button class="secondary" id="signup">Crear cuenta</button></div><div id="authmsg" class="small muted"></div></div>
@@ -111,9 +124,18 @@ function prog(s){
 }
 function days(d){return d?Math.floor((Date.now()-new Date(d+"T00:00:00"))/86400000):null}
 function setView(v){view=v;["dashboard","attendance","students","history","ranking","rules"].forEach(x=>$(x).classList.toggle("hidden",x!==v));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.v===v));render()}
+function updateSessionButtons(){
+ let m=document.getElementById("btn-morning"), a=document.getElementById("btn-afternoon");
+ if(!m||!a)return;
+ m.classList.toggle("session-active",slot==="morning");
+ m.classList.toggle("session-inactive",slot!=="morning");
+ a.classList.toggle("session-active",slot==="afternoon");
+ a.classList.toggle("session-inactive",slot!=="afternoon");
+}
+
 function render(){
  $("dashboard").innerHTML=`<div class="grid"><div class="card"><div class="muted">Alumnos</div><div class="stat">${students.length}</div></div><div class="card"><div class="muted">Asistencias hoy</div><div class="stat">${att.filter(a=>a.date===new Date().toISOString().slice(0,10)).length}</div></div><div class="card"><div class="muted">Total sesiones</div><div class="stat">${att.length}</div></div></div><div class="card"><h3>🚨 Avisos</h3>${students.map(s=>{let p=prog(s),d=days(last(s.id));return p.pct>=100||d>=settings.inactivity_days?`<div class="student"><span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade}</span></span><span>${p.pct>=100?(p.isBelt?"🥋 Preparado para cinturón "+p.nextBelt:"Grado alcanzado"):d+" días sin venir"}</span></div>`:""}).join("")||"<p class='muted'>Sin avisos.</p>"}</div><div class="card"><button onclick="logout()">Cerrar sesión</button></div>`;
- $("attendance").innerHTML=`<div class="card"><h2>Pasar lista</h2><label>Fecha</label><input id="ad" type="date" value="${date}"><label>Sesión</label><div class="row"><button onclick="slot='morning';render()">🌅 Mañana</button><button onclick="slot='afternoon';render()">🌇 Tarde</button></div><p class="small muted">Marca mañana y tarde por separado. Ambas = 2 asistencias.</p></div><div class="card">${students.map(s=>{let ok=att.some(a=>a.student_id===s.id&&a.date===date&&a.slot===slot);return `<div class="student" style="cursor:pointer" onclick="studentHistory('${s.id}')"><span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade}</span></span><button class="${ok?"secondary":""}" onclick="toggle('${s.id}')">${ok?"✅ Presente":"Marcar"}</button></div>`}).join("")}</div>`;$("ad").onchange=e=>{date=e.target.value;render()};
+ $("attendance").innerHTML=`<div class="card"><h2>Pasar lista</h2><label>Fecha</label><input id="ad" type="date" value="${date}"><label>Sesión</label><div class="row"><button id="btn-morning" class="session-btn" onclick="slot='morning';render()">🌅 Mañana</button><button id="btn-afternoon" class="session-btn" onclick="slot='afternoon';render()">🌇 Tarde</button></div><p class="small muted">Marca mañana y tarde por separado. Ambas = 2 asistencias.</p></div><div class="card">${students.map(s=>{let ok=att.some(a=>a.student_id===s.id&&a.date===date&&a.slot===slot);return `<div class="student" style="cursor:pointer" onclick="studentHistory('${s.id}')"><span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade}</span></span><button class="${ok?"secondary":""}" onclick="toggle('${s.id}')">${ok?"✅ Presente":"Marcar"}</button></div>`}).join("")}</div>`;$("ad").onchange=e=>{date=e.target.value;render()};updateSessionButtons();
  $("students").innerHTML=`<div class="card"><div class="row between"><h2>Alumnos</h2><button onclick="addStudent()">+ Añadir</button></div><input id="search" placeholder="Buscar..."><div id="sl">${students.map(card).join("")}</div></div>`;$("search").oninput=e=>$("sl").innerHTML=students.filter(s=>s.name.toLowerCase().includes(e.target.value.toLowerCase())).map(card).join("");
  let by={};att.forEach(a=>(by[a.date]??=[]).push(a));$("history").innerHTML=`<div class="card"><h2>Historial</h2>${Object.keys(by).sort().reverse().map(d=>`<div class="student" style="cursor:pointer" onclick="classHistory('${d}')"><span><b>${d}</b><br><span class="small">🌅 ${by[d].filter(a=>a.slot==="morning").length} · 🌇 ${by[d].filter(a=>a.slot==="afternoon").length}</span></span><b>${by[d].length}</b></div>`).join("")||"<p class='muted'>Sin datos.</p>"}</div>`;
  let mo=new Date().toISOString().slice(0,7),m=$("rm")?.value||mo,c={};att.filter(a=>a.date.startsWith(m)).forEach(a=>c[a.student_id]=(c[a.student_id]||0)+1);let rr=students.map(s=>({...s,n:c[s.id]||0})).sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name));$("ranking").innerHTML=`<div class="card"><h2>🏆 Ranking mensual</h2><label>Mes</label><input id="rm" type="month" value="${m}"><p class="small muted">Cada sesión cuenta 1; mañana+tarde = 2.</p><table><tr><th>#</th><th>Alumno</th><th>Sesiones</th></tr>${rr.map((s,i)=>`<tr><td>${i<3?["🥇","🥈","🥉"][i]:i+1}</td><td>${esc(s.name)}</td><td><b>${s.n}</b></td></tr>`).join("")}</table></div>`;$("rm").onchange=render;
@@ -135,7 +157,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=10.6.1",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=10.7",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
