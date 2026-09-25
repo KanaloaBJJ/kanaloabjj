@@ -1,6 +1,6 @@
 <!doctype html><html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.4"><link rel="icon" type="image/png" href="icon-192.png?v=11.1">
+<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.4"><link rel="icon" type="image/png" href="icon-192.png?v=11.3">
 <title>Kanaloa BJJ</title>
 <style>
 body{margin:0;font-family:system-ui;background:#f4f5f7;color:#111827}header{background:#111827;color:#fff;padding:16px;position:sticky;top:0;z-index:2}header h1{margin:0;font-size:21px}
@@ -104,14 +104,14 @@ header .brand-head h1{margin:0}
 .v11-insurance-tabs button{padding:10px 13px;border:1px solid #d0d5dd;border-radius:10px;background:#fff;font-weight:700}
 .v11-insurance-list .student{margin:7px 0}
 </style></head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
-<img id="v8-auth-logo" class="brand-logo" src="kanaloa-logo.png?v=11.1" alt="Kanaloa Fight Academy">
+<img id="v8-auth-logo" class="brand-logo" src="kanaloa-logo.png?v=11.3" alt="Kanaloa Fight Academy">
 <h1>Kanaloa BJJ</h1><p>Acceso privado de la academia</p>
 <form id="v8-auth-form">
 <label>Email</label><input id="v8-auth-email" type="email" autocomplete="username" value="kanaloacalafell@gmail.com" required>
 <label>Contraseña</label><input id="v8-auth-password" type="password" autocomplete="current-password" required>
 <div id="v8-auth-error"></div><button id="v8-auth-login" type="submit">Entrar</button>
 </form></div></div>
-<header><div class="brand-head"><img id="header-logo" class="brand-logo" src="kanaloa-logo.png?v=11.1" alt=""><div><h1>Kanaloa BJJ</h1><small id="sub">Base de datos online</small></div></div></header>
+<header><div class="brand-head"><img id="header-logo" class="brand-logo" src="kanaloa-logo.png?v=11.3" alt=""><div><h1>Kanaloa BJJ</h1><small id="sub">Base de datos online</small></div></div></header>
 <div id="auth" class="auth card hidden"><h2>Acceso</h2><p class="muted">Los datos se comparten entre los dispositivos que inicien sesión.</p>
 <label>Email</label><input id="email" type="email"><label>Contraseña</label><input id="password" type="password">
 <div class="row" style="margin-top:12px"><button id="login">Entrar</button><button class="secondary" id="signup">Crear cuenta</button></div><div id="authmsg" class="small muted"></div></div>
@@ -144,8 +144,8 @@ function v11RenderAlerts(){
  box.innerHTML=h;
 }
 </script>
-<main id="app" class="hidden"><div id="dashboard"><div id="v11-alerts"></div></div><div id="attendance" class="hidden"></div><div id="students" class="hidden"></div><div id="history" class="hidden"></div><div id="ranking" class="hidden"></div><div id="rules" class="hidden"></div></main>
-<nav id="nav" class="nav hidden"><button data-v="dashboard">🏠<br>Inicio</button><button data-v="attendance">✅<br>Lista</button><button data-v="students">👥<br>Alumnos</button><button data-v="history">📚<br>Historial</button><button data-v="ranking">🏆<br>Ranking</button><button data-v="rules">⚙️<br>Ajustes</button></nav>
+<main id="app" class="hidden"><div id="dashboard"><div id="v11-alerts"></div></div><div id="attendance" class="hidden"></div><div id="students" class="hidden"></div><div id="history" class="hidden"></div><div id="ranking" class="hidden"></div><div id="rules" class="hidden"></div><div id="insurance" class="hidden"></div></main>
+<nav id="nav" class="nav hidden"><button data-v="dashboard">🏠<br>Inicio</button><button data-v="attendance">✅<br>Lista</button><button data-v="students">👥<br>Alumnos</button><button data-v="history">📚<br>Historial</button><button data-v="ranking">🏆<br>Ranking</button><button data-v="insurance">🛡️<br>Seguro</button><button data-v="rules">⚙️<br>Ajustes</button></nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script>
 <script>
 const U=window.BJJ_SUPABASE_URL,K=window.BJJ_SUPABASE_PUBLISHABLE_KEY;let sb,students=[],att=[],rules={},settings={inactivity_days:21,academy_name:"BJJ Academy"},view="dashboard",date=new Date().toISOString().slice(0,10),slot="morning";const belts=["Blanco","Azul","Morado","Marrón","Negro"];
@@ -165,7 +165,7 @@ function prog(s){
  return{done,need,pct:need?Math.min(100,Math.round(done/need*100)):100,nextBelt:g===4?next:null,isBelt:g===4&&!!next};
 }
 function days(d){return d?Math.floor((Date.now()-new Date(d+"T00:00:00"))/86400000):null}
-function setView(v){view=v;["dashboard","attendance","students","history","ranking","rules"].forEach(x=>$(x).classList.toggle("hidden",x!==v));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.v===v));render()}
+function setView(v){view=v;["dashboard","attendance","students","history","ranking","insurance","rules"].forEach(x=>$(x).classList.toggle("hidden",x!==v));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.v===v));render()}
 function updateSessionButtons(){
  let m=document.getElementById("btn-morning"), a=document.getElementById("btn-afternoon");
  if(!m||!a)return;
@@ -181,6 +181,7 @@ function render(){
  $("students").innerHTML=`<div class="card"><div class="row between"><h2>Alumnos</h2><button onclick="addStudent()">+ Añadir</button></div><input id="search" placeholder="Buscar..."><div id="sl">${students.map(card).join("")}</div></div>`;$("search").oninput=e=>$("sl").innerHTML=students.filter(s=>s.name.toLowerCase().includes(e.target.value.toLowerCase())).map(card).join("");
  let by={};att.forEach(a=>(by[a.date]??=[]).push(a));$("history").innerHTML=`<div class="card"><h2>Historial</h2>${Object.keys(by).sort().reverse().map(d=>`<div class="student" style="cursor:pointer" onclick="classHistory('${d}')"><span><b>${d}</b><br><span class="small">🌅 ${by[d].filter(a=>a.slot==="morning").length} · 🌇 ${by[d].filter(a=>a.slot==="afternoon").length}</span></span><b>${by[d].length}</b></div>`).join("")||"<p class='muted'>Sin datos.</p>"}</div>`;
  let mo=new Date().toISOString().slice(0,7),m=$("rm")?.value||mo,c={};att.filter(a=>a.date.startsWith(m)).forEach(a=>c[a.student_id]=(c[a.student_id]||0)+1);let rr=students.map(s=>({...s,n:c[s.id]||0})).sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name));$("ranking").innerHTML=`<div class="card"><h2>🏆 Ranking mensual</h2><label>Mes</label><input id="rm" type="month" value="${m}"><p class="small muted">Cada sesión cuenta 1; mañana+tarde = 2.</p><table><tr><th>#</th><th>Alumno</th><th>Sesiones</th></tr>${rr.map((s,i)=>`<tr><td>${i<3?["🥇","🥈","🥉"][i]:i+1}</td><td>${esc(s.name)}</td><td><b>${s.n}</b></td></tr>`).join("")}</table></div>`;$("rm").onchange=render;
+ $("insurance").innerHTML=`<div class="card"><h2>🛡️ Seguro</h2><div class="v11-insurance-tabs"><button type="button" onclick="v11ShowInsurance('all')">Todos</button><button type="button" onclick="v11ShowInsurance('yes')">✅ Con seguro</button><button type="button" onclick="v11ShowInsurance('no')">❌ Sin seguro</button></div><div id="v11-insurance-list"></div></div>`;v11ShowInsurance("all");
  $("rules").innerHTML=`<div class="card"><h2>⚙️ Reglas</h2><p class="small muted">Los valores son de demostración; configura los de tu academia.</p>${belts.map(b=>`<div class="card"><b>${b}</b><div class="grid">${t(b).map((v,i)=>`<div><label>${i<4?"Grado "+(i+1):(b==="Negro"?"Después de grado 4":"Cambio de cinturón")}</label><input id="r${b}${i}" type="number" value="${v??30}"></div>`).join("")}</div></div>`).join("")}<label>Días para aviso de inactividad</label><input id="inact" type="number" value="${settings.inactivity_days}"><br><br><button onclick="saveRules()">Guardar en la nube</button><button class="secondary" onclick="logout()">Cerrar sesión</button></div>`;
 }
 function card(s){
@@ -199,7 +200,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=11.1",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=11.3",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
@@ -335,37 +336,7 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
 
 
 
-<section id="v11-insurance-page" style="display:none">
- <h2>🛡️ Seguro</h2>
- <div class="v11-insurance-tabs">
-  <button type="button" onclick="v11ShowInsurance('all')">Todos</button>
-  <button type="button" onclick="v11ShowInsurance('yes')">✅ Con seguro</button>
-  <button type="button" onclick="v11ShowInsurance('no')">❌ Sin seguro</button>
- </div>
- <div id="v11-insurance-list" class="v11-insurance-list"></div>
-</section>
-<script id="v11-insurance-script">
-function v11ShowInsurance(filter){
- const box=document.getElementById('v11-insurance-list'); if(!box)return;
- let a=(students||[]).filter(s=>s.active!==false);
- if(filter==='yes') a=a.filter(s=>s.has_insurance===true);
- if(filter==='no') a=a.filter(s=>s.has_insurance!==true);
- box.innerHTML=a.map(s=>`<div class="student"><span><b>${esc(s.name)}</b><br><span class="small">${s.phone?esc(s.phone):'Sin teléfono'} · <span class="v11-badge ${s.has_insurance?'v11-insured':'v11-uninsured'}">${s.has_insurance?'Con seguro':'Sin seguro'}</span></span></span><button class="secondary" onclick="edit('${s.id}')">Editar</button></div>`).join('')||'<p>No hay alumnos en esta categoría.</p>';
-}
-</script>
 
-<script id="v11-2-section-hook">
-(function(){
- const oldShow=window.showSection;
- window.showSection=function(name){
-   if(typeof oldShow==='function') oldShow(name);
-   const ins=document.getElementById('v11-insurance-page');
-   if(ins) ins.style.display=(name==='insurance')?'block':'none';
-   if(name==='insurance' && typeof v11ShowInsurance==='function') v11ShowInsurance('all');
-   const alerts=document.getElementById('v11-alerts');
-   const home=document.getElementById('home')||document.getElementById('inicio')||document.getElementById('dashboard');
-   if(alerts && home && getComputedStyle(home).display==='none') alerts.innerHTML='';
- };
-})();
-</script>
+
+
 </body></html>
