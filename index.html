@@ -1,6 +1,6 @@
 <!doctype html><html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.4"><link rel="icon" type="image/png" href="icon-192.png?v=11.0">
+<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.4"><link rel="icon" type="image/png" href="icon-192.png?v=11.1">
 <title>Kanaloa BJJ</title>
 <style>
 body{margin:0;font-family:system-ui;background:#f4f5f7;color:#111827}header{background:#111827;color:#fff;padding:16px;position:sticky;top:0;z-index:2}header h1{margin:0;font-size:21px}
@@ -99,19 +99,18 @@ header .brand-head h1{margin:0}
 .v11-badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:800}
 .v11-insured{background:#dcfce7;color:#166534}.v11-uninsured{background:#fee2e2;color:#991b1b}
 </style></head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
-<img id="v8-auth-logo" class="brand-logo" src="kanaloa-logo.png?v=11.0" alt="Kanaloa Fight Academy">
+<img id="v8-auth-logo" class="brand-logo" src="kanaloa-logo.png?v=11.1" alt="Kanaloa Fight Academy">
 <h1>Kanaloa BJJ</h1><p>Acceso privado de la academia</p>
 <form id="v8-auth-form">
 <label>Email</label><input id="v8-auth-email" type="email" autocomplete="username" value="kanaloacalafell@gmail.com" required>
 <label>Contraseña</label><input id="v8-auth-password" type="password" autocomplete="current-password" required>
 <div id="v8-auth-error"></div><button id="v8-auth-login" type="submit">Entrar</button>
 </form></div></div>
-<header><div class="brand-head"><img id="header-logo" class="brand-logo" src="kanaloa-logo.png?v=11.0" alt=""><div><h1>Kanaloa BJJ</h1><small id="sub">Base de datos online</small></div></div></header>
+<header><div class="brand-head"><img id="header-logo" class="brand-logo" src="kanaloa-logo.png?v=11.1" alt=""><div><h1>Kanaloa BJJ</h1><small id="sub">Base de datos online</small></div></div></header>
 <div id="auth" class="auth card hidden"><h2>Acceso</h2><p class="muted">Los datos se comparten entre los dispositivos que inicien sesión.</p>
 <label>Email</label><input id="email" type="email"><label>Contraseña</label><input id="password" type="password">
 <div class="row" style="margin-top:12px"><button id="login">Entrar</button><button class="secondary" id="signup">Crear cuenta</button></div><div id="authmsg" class="small muted"></div></div>
 
-<div id="v11-alerts"></div>
 <script>
 function v11DaysSince(d){return d?Math.floor((Date.now()-new Date(d+'T12:00:00'))/86400000):0}
 function v11Birthday(s){
@@ -124,6 +123,8 @@ function v11Birthday(s){
 }
 function v11RenderAlerts(){
  const box=document.getElementById('v11-alerts');if(!box)return;
+ const home=document.getElementById('home')||document.getElementById('inicio')||document.getElementById('dashboard');
+ if(home && getComputedStyle(home).display==='none'){box.innerHTML='';return;}
  const a=(students||[]).filter(s=>s.active!==false),today=[],tomorrow=[],uninsured=[],inactive=[];
  a.forEach(s=>{
   const b=v11Birthday(s);if(b==='today')today.push(s);if(b==='tomorrow')tomorrow.push(s);
@@ -138,7 +139,7 @@ function v11RenderAlerts(){
  box.innerHTML=h;
 }
 </script>
-<main id="app" class="hidden"><div id="dashboard"></div><div id="attendance" class="hidden"></div><div id="students" class="hidden"></div><div id="history" class="hidden"></div><div id="ranking" class="hidden"></div><div id="rules" class="hidden"></div></main>
+<main id="app" class="hidden"><div id="dashboard"><div id="v11-alerts"></div></div><div id="attendance" class="hidden"></div><div id="students" class="hidden"></div><div id="history" class="hidden"></div><div id="ranking" class="hidden"></div><div id="rules" class="hidden"></div></main>
 <nav id="nav" class="nav hidden"><button data-v="dashboard">🏠<br>Inicio</button><button data-v="attendance">✅<br>Lista</button><button data-v="students">👥<br>Alumnos</button><button data-v="history">📚<br>Historial</button><button data-v="ranking">🏆<br>Ranking</button><button data-v="rules">⚙️<br>Ajustes</button></nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script>
 <script>
@@ -193,7 +194,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=11.0",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=11.1",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
@@ -324,6 +325,18 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
      e.preventDefault();e.stopPropagation();openStudent(null);
    }
  },true);
+})();
+</script>
+
+<script id="v11-1-alert-scope">
+(function(){
+ function scopeAlerts(){
+   const box=document.getElementById('v11-alerts'); if(!box)return;
+   const home=document.getElementById('home')||document.getElementById('inicio')||document.getElementById('dashboard');
+   if(home && getComputedStyle(home).display==='none') box.innerHTML='';
+ }
+ document.addEventListener('click',()=>setTimeout(scopeAlerts,0),true);
+ window.addEventListener('hashchange',scopeAlerts);
 })();
 </script>
 </body></html>
