@@ -1,6 +1,6 @@
 <!doctype html><html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.4"><link rel="icon" type="image/png" href="icon-192.png?v=10.7">
+<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.4"><link rel="icon" type="image/png" href="icon-192.png?v=11.0">
 <title>Kanaloa BJJ</title>
 <style>
 body{margin:0;font-family:system-ui;background:#f4f5f7;color:#111827}header{background:#111827;color:#fff;padding:16px;position:sticky;top:0;z-index:2}header h1{margin:0;font-size:21px}
@@ -90,18 +90,54 @@ header .brand-head h1{margin:0}
   color:#111827!important;
 }
 </style>
-</head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
-<img id="v8-auth-logo" class="brand-logo" src="kanaloa-logo.png?v=10.7" alt="Kanaloa Fight Academy">
+<style id="v11-style">
+.v11-insurance-row{display:flex;gap:10px;flex-wrap:wrap}
+.v11-insurance-btn{flex:1;min-width:120px}
+.v11-alert{border-radius:12px;padding:12px 14px;margin:8px 0;background:#fff7ed}
+.v11-alert strong{display:block;margin-bottom:5px}
+.v11-alert ul{margin:5px 0 0 20px;padding:0}
+.v11-badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:800}
+.v11-insured{background:#dcfce7;color:#166534}.v11-uninsured{background:#fee2e2;color:#991b1b}
+</style></head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
+<img id="v8-auth-logo" class="brand-logo" src="kanaloa-logo.png?v=11.0" alt="Kanaloa Fight Academy">
 <h1>Kanaloa BJJ</h1><p>Acceso privado de la academia</p>
 <form id="v8-auth-form">
 <label>Email</label><input id="v8-auth-email" type="email" autocomplete="username" value="kanaloacalafell@gmail.com" required>
 <label>Contraseña</label><input id="v8-auth-password" type="password" autocomplete="current-password" required>
 <div id="v8-auth-error"></div><button id="v8-auth-login" type="submit">Entrar</button>
 </form></div></div>
-<header><div class="brand-head"><img id="header-logo" class="brand-logo" src="kanaloa-logo.png?v=10.7" alt=""><div><h1>Kanaloa BJJ</h1><small id="sub">Base de datos online</small></div></div></header>
+<header><div class="brand-head"><img id="header-logo" class="brand-logo" src="kanaloa-logo.png?v=11.0" alt=""><div><h1>Kanaloa BJJ</h1><small id="sub">Base de datos online</small></div></div></header>
 <div id="auth" class="auth card hidden"><h2>Acceso</h2><p class="muted">Los datos se comparten entre los dispositivos que inicien sesión.</p>
 <label>Email</label><input id="email" type="email"><label>Contraseña</label><input id="password" type="password">
 <div class="row" style="margin-top:12px"><button id="login">Entrar</button><button class="secondary" id="signup">Crear cuenta</button></div><div id="authmsg" class="small muted"></div></div>
+
+<div id="v11-alerts"></div>
+<script>
+function v11DaysSince(d){return d?Math.floor((Date.now()-new Date(d+'T12:00:00'))/86400000):0}
+function v11Birthday(s){
+ if(!s.birth_date)return null;
+ const b=new Date(s.birth_date+'T12:00:00'),n=new Date();
+ const y=new Date(n.getFullYear(),b.getMonth(),b.getDate(),12);
+ const t=new Date(n.getFullYear(),n.getMonth(),n.getDate(),12);
+ const tm=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,12);
+ return y.getTime()===t.getTime()?'today':y.getTime()===tm.getTime()?'tomorrow':null;
+}
+function v11RenderAlerts(){
+ const box=document.getElementById('v11-alerts');if(!box)return;
+ const a=(students||[]).filter(s=>s.active!==false),today=[],tomorrow=[],uninsured=[],inactive=[];
+ a.forEach(s=>{
+  const b=v11Birthday(s);if(b==='today')today.push(s);if(b==='tomorrow')tomorrow.push(s);
+  if(s.has_insurance!==true)uninsured.push(s);
+  const l=last(s.id);if(l){const d=v11DaysSince(l);if(d>21)inactive.push({s,d})}
+ });
+ let h='';
+ if(today.length)h+=`<div class="v11-alert"><strong>🎉 Cumpleaños hoy</strong><ul>${today.map(s=>`<li>${esc(s.name)}</li>`).join('')}</ul></div>`;
+ if(tomorrow.length)h+=`<div class="v11-alert"><strong>🎂 Cumpleaños mañana</strong><ul>${tomorrow.map(s=>`<li>${esc(s.name)}</li>`).join('')}</ul></div>`;
+ if(uninsured.length)h+=`<div class="v11-alert"><strong>🛡️ Alumnos sin seguro (${uninsured.length})</strong><ul>${uninsured.map(s=>`<li>${esc(s.name)}</li>`).join('')}</ul></div>`;
+ if(inactive.length)h+=`<div class="v11-alert"><strong>⚠️ Más de 21 días sin asistir (${inactive.length})</strong><ul>${inactive.map(x=>`<li>${esc(x.s.name)} — ${x.d} días</li>`).join('')}</ul></div>`;
+ box.innerHTML=h;
+}
+</script>
 <main id="app" class="hidden"><div id="dashboard"></div><div id="attendance" class="hidden"></div><div id="students" class="hidden"></div><div id="history" class="hidden"></div><div id="ranking" class="hidden"></div><div id="rules" class="hidden"></div></main>
 <nav id="nav" class="nav hidden"><button data-v="dashboard">🏠<br>Inicio</button><button data-v="attendance">✅<br>Lista</button><button data-v="students">👥<br>Alumnos</button><button data-v="history">📚<br>Historial</button><button data-v="ranking">🏆<br>Ranking</button><button data-v="rules">⚙️<br>Ajustes</button></nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script>
@@ -135,7 +171,7 @@ function updateSessionButtons(){
 
 function render(){
  $("dashboard").innerHTML=`<div class="grid"><div class="card"><div class="muted">Alumnos</div><div class="stat">${students.length}</div></div><div class="card"><div class="muted">Asistencias hoy</div><div class="stat">${att.filter(a=>a.date===new Date().toISOString().slice(0,10)).length}</div></div><div class="card"><div class="muted">Total sesiones</div><div class="stat">${att.length}</div></div></div><div class="card"><h3>🚨 Avisos</h3>${students.map(s=>{let p=prog(s),d=days(last(s.id));return p.pct>=100||d>=settings.inactivity_days?`<div class="student"><span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade}</span></span><span>${p.pct>=100?(p.isBelt?"🥋 Preparado para cinturón "+p.nextBelt:"Grado alcanzado"):d+" días sin venir"}</span></div>`:""}).join("")||"<p class='muted'>Sin avisos.</p>"}</div><div class="card"><button onclick="logout()">Cerrar sesión</button></div>`;
- $("attendance").innerHTML=`<div class="card"><h2>Pasar lista</h2><label>Fecha</label><input id="ad" type="date" value="${date}"><label>Sesión</label><div class="row"><button id="btn-morning" class="session-btn" onclick="slot='morning';render()">🌅 Mañana</button><button id="btn-afternoon" class="session-btn" onclick="slot='afternoon';render()">🌇 Tarde</button></div><p class="small muted">Marca mañana y tarde por separado. Ambas = 2 asistencias.</p></div><div class="card">${students.map(s=>{let ok=att.some(a=>a.student_id===s.id&&a.date===date&&a.slot===slot);return `<div class="student" style="cursor:pointer" onclick="studentHistory('${s.id}')"><span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade}</span></span><button class="${ok?"secondary":""}" onclick="toggle('${s.id}')">${ok?"✅ Presente":"Marcar"}</button></div>`}).join("")}</div>`;$("ad").onchange=e=>{date=e.target.value;render()};updateSessionButtons();
+ $("attendance").innerHTML=`<div class="card"><h2>Pasar lista</h2><label>Fecha</label><input id="ad" type="date" value="${date}"><label>Sesión</label><div class="row"><button id="btn-morning" class="session-btn" onclick="slot='morning';render()">🌅 Mañana</button><button id="btn-afternoon" class="session-btn" onclick="slot='afternoon';render()">🌇 Tarde</button></div><p class="small muted">Marca mañana y tarde por separado. Ambas = 2 asistencias.</p></div><div class="card">${students.map(s=>{let ok=att.some(a=>a.student_id===s.id&&a.date===date&&a.slot===slot);return `<div class="student" style="cursor:pointer" onclick="studentHistory('${s.id}')"><span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade}</span></span><button class="${ok?"secondary":""}" onclick="toggle('${s.id}')">${ok?"✅ Presente":"Marcar"}</button></div>`}).join("")}</div>`;$("ad").onchange=e=>{date=e.target.value;render()};updateSessionButtons();v11RenderAlerts();
  $("students").innerHTML=`<div class="card"><div class="row between"><h2>Alumnos</h2><button onclick="addStudent()">+ Añadir</button></div><input id="search" placeholder="Buscar..."><div id="sl">${students.map(card).join("")}</div></div>`;$("search").oninput=e=>$("sl").innerHTML=students.filter(s=>s.name.toLowerCase().includes(e.target.value.toLowerCase())).map(card).join("");
  let by={};att.forEach(a=>(by[a.date]??=[]).push(a));$("history").innerHTML=`<div class="card"><h2>Historial</h2>${Object.keys(by).sort().reverse().map(d=>`<div class="student" style="cursor:pointer" onclick="classHistory('${d}')"><span><b>${d}</b><br><span class="small">🌅 ${by[d].filter(a=>a.slot==="morning").length} · 🌇 ${by[d].filter(a=>a.slot==="afternoon").length}</span></span><b>${by[d].length}</b></div>`).join("")||"<p class='muted'>Sin datos.</p>"}</div>`;
  let mo=new Date().toISOString().slice(0,7),m=$("rm")?.value||mo,c={};att.filter(a=>a.date.startsWith(m)).forEach(a=>c[a.student_id]=(c[a.student_id]||0)+1);let rr=students.map(s=>({...s,n:c[s.id]||0})).sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name));$("ranking").innerHTML=`<div class="card"><h2>🏆 Ranking mensual</h2><label>Mes</label><input id="rm" type="month" value="${m}"><p class="small muted">Cada sesión cuenta 1; mañana+tarde = 2.</p><table><tr><th>#</th><th>Alumno</th><th>Sesiones</th></tr>${rr.map((s,i)=>`<tr><td>${i<3?["🥇","🥈","🥉"][i]:i+1}</td><td>${esc(s.name)}</td><td><b>${s.n}</b></td></tr>`).join("")}</table></div>`;$("rm").onchange=render;
@@ -157,7 +193,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=10.7",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=11.0",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
@@ -190,6 +226,14 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
    <input type="hidden" id="v10-student-id">
    <div class="v10-field"><label>Nombre</label><input id="v10-first-name" required autocomplete="given-name"></div>
    <div class="v10-field"><label>Apellidos</label><input id="v10-last-name" autocomplete="family-name"></div>
+   <div class="v10-field"><label>Fecha de nacimiento</label><input id="v11-birth-date" type="date"></div>
+   <div class="v10-field"><label>Número de teléfono</label><input id="v11-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="Ej. 600 123 456"></div>
+   <div class="v10-field"><label>Seguro</label>
+    <div class="v11-insurance-row" id="v11-insurance">
+     <button type="button" class="v10-choice v11-insurance-btn" data-value="true">✅ Tiene seguro</button>
+     <button type="button" class="v10-choice v11-insurance-btn" data-value="false">❌ Sin seguro</button>
+    </div>
+   </div>
    <div class="v10-field"><label>Cinturón</label>
     <div class="v10-choice-row" id="v10-belts">
      <button type="button" class="v10-choice" data-value="Blanco">⚪ Blanco</button>
@@ -220,15 +264,18 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
  const modal=document.getElementById('v10-student-modal'), form=document.getElementById('v10-student-form');
  const first=document.getElementById('v10-first-name'), last=document.getElementById('v10-last-name'), sid=document.getElementById('v10-student-id');
  const err=document.getElementById('v10-error'), title=document.getElementById('v10-form-title');
- let belt='Blanco', grade=0;
+ let belt='Blanco', grade=0, insurance=false;
  function choose(group,val){
   document.querySelectorAll('#'+group+' .v10-choice').forEach(b=>b.classList.toggle('selected',String(b.dataset.value)===String(val)));
  }
  function openStudent(s){
   sid.value=s?.id||''; first.value=s?.first_name||s?.name?.split(' ')[0]||'';
   last.value=s?.last_name||((s?.name||'').split(' ').slice(1).join(' '));
+  document.getElementById('v11-birth-date').value=s?.birth_date||'';
+  document.getElementById('v11-phone').value=s?.phone||'';
+  insurance=s?.has_insurance===true;
   belt=s?.belt||'Blanco'; grade=Number(s?.grade??0);
-  choose('v10-belts',belt);choose('v10-grades',grade);
+  choose('v10-belts',belt);choose('v10-grades',grade);choose('v11-insurance',String(insurance));
   title.textContent=s?.id?'Editar alumno':'Nuevo alumno';document.getElementById('v10-delete').classList.toggle('hidden',!s?.id);err.textContent='';modal.style.display='flex';
  }
  function close(){modal.style.display='none'}
@@ -236,11 +283,12 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
  modal.addEventListener('click',e=>{if(e.target===modal)close()});
  document.querySelectorAll('#v10-belts .v10-choice').forEach(b=>b.onclick=()=>{belt=b.dataset.value;choose('v10-belts',belt)});
  document.querySelectorAll('#v10-grades .v10-choice').forEach(b=>b.onclick=()=>{grade=Number(b.dataset.value);choose('v10-grades',grade)});
+ document.querySelectorAll('#v11-insurance .v10-choice').forEach(b=>b.onclick=()=>{insurance=b.dataset.value==='true';choose('v11-insurance',String(insurance))});
  form.addEventListener('submit',async e=>{
   e.preventDefault(); err.textContent='';
   const c=window.sb||sb||window.bjjSupabaseClient;if(!c){err.textContent='No hay conexión con Supabase.';return}
   const fn=first.value.trim(), ln=last.value.trim(); if(!fn){err.textContent='Escribe el nombre.';return}
-  const payload={name:(fn+' '+ln).trim(),first_name:fn,last_name:ln,belt,grade};
+  const payload={name:(fn+' '+ln).trim(),first_name:fn,last_name:ln,belt,grade,birth_date:document.getElementById('v11-birth-date').value||null,phone:document.getElementById('v11-phone').value.trim()||null,has_insurance:insurance};
   let q=sid.value?c.from('students').update(payload).eq('id',sid.value):c.from('students').insert(payload);
   const {error}=await q;
   if(error){err.textContent='No se pudo guardar: '+error.message;return}
