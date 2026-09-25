@@ -1,6 +1,6 @@
 <!doctype html><html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.4"><link rel="icon" type="image/png" href="icon-192.png?v=13.0">
+<meta name="theme-color" content="#111827"><link rel="manifest" href="manifest.webmanifest?v=10.4"><link rel="icon" type="image/png" href="icon-192.png?v=13.1">
 <title>Kanaloa BJJ</title>
 <style>
 body{margin:0;font-family:system-ui;background:#f4f5f7;color:#111827}header{background:#111827;color:#fff;padding:16px;position:sticky;top:0;z-index:2}header h1{margin:0;font-size:21px}
@@ -119,14 +119,14 @@ header .brand-head h1{margin:0}
 .v13-teacher-note{font-size:12px;color:#6b7280;margin-top:5px}
 </style>
 </head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
-<img id="v8-auth-logo" class="brand-logo" src="kanaloa-logo.png?v=13.0" alt="Kanaloa Fight Academy">
+<img id="v8-auth-logo" class="brand-logo" src="kanaloa-logo.png?v=13.1" alt="Kanaloa Fight Academy">
 <h1>Kanaloa BJJ</h1><p>Acceso privado de la academia</p>
 <form id="v8-auth-form">
 <label>Email</label><input id="v8-auth-email" type="email" autocomplete="username" value="kanaloacalafell@gmail.com" required>
 <label>Contraseña</label><input id="v8-auth-password" type="password" autocomplete="current-password" required>
 <div id="v8-auth-error"></div><button id="v8-auth-login" type="submit">Entrar</button>
 </form></div></div>
-<header><div class="brand-head"><img id="header-logo" class="brand-logo" src="kanaloa-logo.png?v=13.0" alt=""><div><h1>Kanaloa BJJ</h1><small id="sub">Base de datos online</small></div></div></header>
+<header><div class="brand-head"><img id="header-logo" class="brand-logo" src="kanaloa-logo.png?v=13.1" alt=""><div><h1>Kanaloa BJJ</h1><small id="sub">Base de datos online</small></div></div></header>
 <div id="auth" class="auth card hidden"><h2>Acceso</h2><p class="muted">Los datos se comparten entre los dispositivos que inicien sesión.</p>
 <label>Email</label><input id="email" type="email"><label>Contraseña</label><input id="password" type="password">
 <div class="row" style="margin-top:12px"><button id="login">Entrar</button><button class="secondary" id="signup">Crear cuenta</button></div><div id="authmsg" class="small muted"></div></div>
@@ -249,10 +249,36 @@ function v13TeacherBlock(){
  </div>`;
 }
 
+
+function v13TeacherName(dateValue,slotValue){
+ const s=v13GetSession(dateValue,slotValue);
+ if(!s?.teacher_id)return "Sin profesor asignado";
+ const t=(students||[]).find(x=>x.id===s.teacher_id);
+ return t?.name||"Profesor no encontrado";
+}
+function v13TeacherClasses(studentId){
+ return (classSessions||[]).filter(x=>x.teacher_id===studentId).sort((a,b)=>b.date.localeCompare(a.date));
+}
+
+
+function v13DecorateClassHistory(){
+ const box=$("history"); if(!box)return;
+ const nodes=box.querySelectorAll("[data-class-date][data-class-slot]");
+ nodes.forEach(n=>{
+   const d=n.dataset.classDate,s=n.dataset.classSlot;
+   if(!n.querySelector(".v13-history-teacher")){
+     const el=document.createElement("div");
+     el.className="v13-history-teacher small muted";
+     el.textContent="👨‍🏫 "+v13TeacherName(d,s);
+     n.appendChild(el);
+   }
+ });
+}
+
 function render(){
  $("dashboard").innerHTML=`<div class="grid"><div class="card"><div class="muted">Alumnos</div><div class="stat">${students.length}</div></div><div class="card"><div class="muted">Asistencias hoy</div><div class="stat">${att.filter(a=>a.date===new Date().toISOString().slice(0,10)).length}</div></div><div class="card"><div class="muted">Total sesiones</div><div class="stat">${att.length}</div></div></div><div id="v11-alerts"></div><div class="card"><h3>🚨 Avisos</h3>${students.map(s=>{let p=prog(s),d=days(last(s.id));return p.pct>=100||d>=settings.inactivity_days?`<div class="student"><span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade}</span></span><span>${p.pct>=100?(p.isBelt?"🥋 Preparado para cinturón "+p.nextBelt:"Grado alcanzado"):d+" días sin venir"}</span></div>`:""}).join("")||"<p class='muted'>Sin avisos.</p>"}</div><div class="card"><button onclick="logout()">Cerrar sesión</button></div>`;
  v11RenderAlerts();
- $("attendance").innerHTML=`${v13TeacherBlock()}<div class="card"><h2>Pasar lista</h2><label>Fecha</label><input id="ad" type="date" value="${date}"><label>Sesión</label><div class="row"><button id="btn-morning" class="session-btn" onclick="slot='morning';render()">🌅 Mañana</button><button id="btn-afternoon" class="session-btn" onclick="slot='afternoon';render()">🌇 Tarde</button></div><p class="small muted">Marca mañana y tarde por separado. Ambas = 2 asistencias.</p></div><div class="card">${students.map(s=>{let ok=att.some(a=>a.student_id===s.id&&a.date===date&&a.slot===slot);return `<div class="student" style="cursor:pointer" onclick="studentHistory('${s.id}')"><span class="v12-photo-row">${s.photo_url?`<img class="v12-photo" src="${esc(s.photo_url)}" alt="">`:`<span class="v12-photo v12-photo-placeholder">👤</span>`}<span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade}</span></span></span><button class="${ok?"secondary":""}" onclick="toggle('${s.id}')">${ok?"✅ Presente":"Marcar"}</button></div>`}).join("")}</div>`;$("ad").onchange=e=>{date=e.target.value;render()};updateSessionButtons();
+ $("attendance").innerHTML=`${v13TeacherBlock()}<div class="card"><h2>Pasar lista</h2><label>Fecha</label><input id="ad" type="date" value="${date}"><label>Sesión</label><div class="row"><button id="btn-morning" class="session-btn" onclick="slot='morning';render()">🌅 Mañana</button><button id="btn-afternoon" class="session-btn" onclick="slot='afternoon';render()">🌇 Tarde</button></div><p class="small muted">Marca mañana y tarde por separado. Ambas = 2 asistencias.</p></div><div class="card">${students.map(s=>{let ok=att.some(a=>a.student_id===s.id&&a.date===date&&a.slot===slot);return `<div class="student" style="cursor:pointer" onclick="studentHistory('${s.id}')"><span class="v12-photo-row">${s.photo_url?`<img class="v12-photo" src="${esc(s.photo_url)}" alt="">`:`<span class="v12-photo v12-photo-placeholder">👤</span>`}<span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade}</span></span></span><button class="${ok?"secondary":""}" onclick="toggle('${s.id}')">${ok?"✅ Presente":"Marcar"}</button></div>`}).join("")}</div>`;$("ad").onchange=e=>{date=e.target.value;render()};updateSessionButtons();v13DecorateClassHistory();
  $("students").innerHTML=`<div class="card"><div class="row between"><h2>Alumnos</h2><button onclick="addStudent()">+ Añadir</button></div><input id="search" placeholder="Buscar..."><div id="sl">${students.map(card).join("")}</div></div>`;$("search").oninput=e=>$("sl").innerHTML=students.filter(s=>s.name.toLowerCase().includes(e.target.value.toLowerCase())).map(card).join("");
  let by={};att.forEach(a=>(by[a.date]??=[]).push(a));$("history").innerHTML=`<div class="card"><h2>Historial</h2>${Object.keys(by).sort().reverse().map(d=>`<div class="student" style="cursor:pointer" onclick="classHistory('${d}')"><span><b>${d}</b><br><span class="small">🌅 ${by[d].filter(a=>a.slot==="morning").length} · 🌇 ${by[d].filter(a=>a.slot==="afternoon").length}</span></span><b>${by[d].length}</b></div>`).join("")||"<p class='muted'>Sin datos.</p>"}</div>`;
  let mo=new Date().toISOString().slice(0,7),m=$("rm")?.value||mo,c={};att.filter(a=>a.date.startsWith(m)).forEach(a=>c[a.student_id]=(c[a.student_id]||0)+1);let rr=students.map(s=>({...s,n:c[s.id]||0})).sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name));$("ranking").innerHTML=`<div class="card"><h2>🏆 Ranking mensual</h2><label>Mes</label><input id="rm" type="month" value="${m}"><p class="small muted">Cada sesión cuenta 1; mañana+tarde = 2.</p><table><tr><th>#</th><th>Alumno</th><th>Sesiones</th></tr>${rr.map((s,i)=>`<tr><td>${i<3?["🥇","🥈","🥉"][i]:i+1}</td><td>${esc(s.name)}</td><td><b>${s.n}</b></td></tr>`).join("")}</table></div>`;$("rm").onchange=render;
@@ -275,7 +301,7 @@ function card(s){
    (s.belt==="Negro"&&Number(s.grade)===4?`${total(s.id)} asistencias totales`:`${p.done}/${p.need}`);
  return `<div class="student" style="cursor:pointer" onclick="studentHistory('${s.id}')"><span class="v12-photo-row">${s.photo_url?`<img class="v12-photo" src="${esc(s.photo_url)}" alt="">`:`<span class="v12-photo v12-photo-placeholder">👤</span>`}<span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade} · ${progress} · ${l?"última "+l:"sin asistencia"}</span></span></span><button class="secondary" onclick="event.stopPropagation();edit('${s.id}')">Editar</button></div>`
 }
-async function studentHistory(id){let s=students.find(x=>x.id===id);let rows=att.filter(a=>a.student_id===id).sort((a,b)=>b.date.localeCompare(a.date));$("students").innerHTML=`<div class="card"><button class="secondary" onclick="render()">← Volver</button><div class="v12-photo-row">${s.photo_url?`<img class="v12-photo-lg" src="${esc(s.photo_url)}" alt="">`:`<span class="v12-photo-lg v12-photo-placeholder">👤</span>`}<div><h2>${esc(s.name)}</h2><p>${s.belt} · grado ${s.grade}</p></div></div><h3>Historial de asistencias (${rows.length})</h3>${rows.map(a=>`<div class="student"><span><b>${a.date}</b><br><span class="small">${a.slot==="morning"?"🌅 Mañana":"🌇 Tarde"}</span></span></div>`).join("")||"<p class='muted'>Sin asistencias.</p>"}</div>`}
+async function studentHistory(id){let s=students.find(x=>x.id===id);let rows=att.filter(a=>a.student_id===id).sort((a,b)=>b.date.localeCompare(a.date));$("students").innerHTML=`<div class="card"><button class="secondary" onclick="render()">← Volver</button><div class="v12-photo-row">${s.photo_url?`<img class="v12-photo-lg" src="${esc(s.photo_url)}" alt="">`:`<span class="v12-photo-lg v12-photo-placeholder">👤</span>`}<div><h2>${esc(s.name)}</h2><p>${s.belt} · grado ${s.grade}</p></div></div><h3>Historial de asistencias (${rows.length})</h3>${rows.map(a=>`<div class="student" data-class-date="${a.date}" data-class-slot="${a.slot}"><span><b>${a.date}</b><br><span class="small">${a.slot==="morning"?"🌅 Mañana":"🌇 Tarde"}</span></span></div>`).join("")||"<p class='muted'>Sin asistencias.</p>"}</div>`}
 async function classHistory(d){let rows=att.filter(a=>a.date===d);let names=id=>students.find(s=>s.id===id)?.name||"Alumno";$("history").innerHTML=`<div class="card"><button class="secondary" onclick="render()">← Volver</button><h2>Clase · ${d}</h2><h3>🌅 Mañana</h3>${rows.filter(a=>a.slot==="morning").map(a=>`<div class="student"><b>${esc(names(a.student_id))}</b></div>`).join("")||"<p class='muted'>Sin alumnos.</p>"}<h3>🌇 Tarde</h3>${rows.filter(a=>a.slot==="afternoon").map(a=>`<div class="student"><b>${esc(names(a.student_id))}</b></div>`).join("")||"<p class='muted'>Sin alumnos.</p>"}</div>`}
 async function toggle(id){if(v13GetSession(date,slot)?.teacher_id===id){toast("El profesor de esta clase no cuenta como alumno.");return}let e=att.find(a=>a.student_id===id&&a.date===date&&a.slot===slot);let q=e?await sb.from("attendance").delete().eq("id",e.id):await sb.from("attendance").insert({student_id:id,date,slot});if(q.error)toast(q.error.message);else{await load();render()}}
 function addStudent(){ window.openV10StudentForm(null); }
@@ -285,7 +311,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.0",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.1",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
@@ -390,6 +416,13 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
    const f=photoInput.files?.[0]; if(!f)return;
    const u=URL.createObjectURL(f);
    photoPreview.innerHTML=`<img class="v12-photo-lg" src="${u}" alt="">`;
+ const teacherClasses=v13TeacherClasses(id);
+ const teacherHtml=`<div class="card"><h3>👨‍🏫 Clases impartidas como profesor</h3>${
+   teacherClasses.length
+   ? teacherClasses.map(c=>`<div class="student"><span><b>${esc(c.date)}</b><br><span class="small">${c.slot==="morning"?"🌅 Mañana":"🌇 Tarde"} · Profesor</span></span></div>`).join("")
+   : '<p class="muted">Este alumno no tiene clases registradas como profesor.</p>'
+ }</div>`;
+ $("students").insertAdjacentHTML("beforeend",teacherHtml);
  });
 
  modal.addEventListener('click',e=>{if(e.target===modal)close()});
