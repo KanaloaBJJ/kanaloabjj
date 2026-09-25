@@ -98,6 +98,11 @@ header .brand-head h1{margin:0}
 .v11-alert ul{margin:5px 0 0 20px;padding:0}
 .v11-badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:800}
 .v11-insured{background:#dcfce7;color:#166534}.v11-uninsured{background:#fee2e2;color:#991b1b}
+</style><style id="v11-2-insurance-style">
+#v11-insurance-page{padding:12px 0}
+.v11-insurance-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.v11-insurance-tabs button{padding:10px 13px;border:1px solid #d0d5dd;border-radius:10px;background:#fff;font-weight:700}
+.v11-insurance-list .student{margin:7px 0}
 </style></head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
 <img id="v8-auth-logo" class="brand-logo" src="kanaloa-logo.png?v=11.1" alt="Kanaloa Fight Academy">
 <h1>Kanaloa BJJ</h1><p>Acceso privado de la academia</p>
@@ -328,15 +333,39 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
 })();
 </script>
 
-<script id="v11-1-alert-scope">
+
+
+<section id="v11-insurance-page" style="display:none">
+ <h2>🛡️ Seguro</h2>
+ <div class="v11-insurance-tabs">
+  <button type="button" onclick="v11ShowInsurance('all')">Todos</button>
+  <button type="button" onclick="v11ShowInsurance('yes')">✅ Con seguro</button>
+  <button type="button" onclick="v11ShowInsurance('no')">❌ Sin seguro</button>
+ </div>
+ <div id="v11-insurance-list" class="v11-insurance-list"></div>
+</section>
+<script id="v11-insurance-script">
+function v11ShowInsurance(filter){
+ const box=document.getElementById('v11-insurance-list'); if(!box)return;
+ let a=(students||[]).filter(s=>s.active!==false);
+ if(filter==='yes') a=a.filter(s=>s.has_insurance===true);
+ if(filter==='no') a=a.filter(s=>s.has_insurance!==true);
+ box.innerHTML=a.map(s=>`<div class="student"><span><b>${esc(s.name)}</b><br><span class="small">${s.phone?esc(s.phone):'Sin teléfono'} · <span class="v11-badge ${s.has_insurance?'v11-insured':'v11-uninsured'}">${s.has_insurance?'Con seguro':'Sin seguro'}</span></span></span><button class="secondary" onclick="edit('${s.id}')">Editar</button></div>`).join('')||'<p>No hay alumnos en esta categoría.</p>';
+}
+</script>
+
+<script id="v11-2-section-hook">
 (function(){
- function scopeAlerts(){
-   const box=document.getElementById('v11-alerts'); if(!box)return;
+ const oldShow=window.showSection;
+ window.showSection=function(name){
+   if(typeof oldShow==='function') oldShow(name);
+   const ins=document.getElementById('v11-insurance-page');
+   if(ins) ins.style.display=(name==='insurance')?'block':'none';
+   if(name==='insurance' && typeof v11ShowInsurance==='function') v11ShowInsurance('all');
+   const alerts=document.getElementById('v11-alerts');
    const home=document.getElementById('home')||document.getElementById('inicio')||document.getElementById('dashboard');
-   if(home && getComputedStyle(home).display==='none') box.innerHTML='';
- }
- document.addEventListener('click',()=>setTimeout(scopeAlerts,0),true);
- window.addEventListener('hashchange',scopeAlerts);
+   if(alerts && home && getComputedStyle(home).display==='none') alerts.innerHTML='';
+ };
 })();
 </script>
 </body></html>
