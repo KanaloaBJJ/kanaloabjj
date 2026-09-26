@@ -264,9 +264,7 @@ function v13ProgressForStudent(s){
   const count=v13ProgressCount(s.id);
   const current=Number(s.grade||0);
   const needed=Number((rules||{})[s.belt]?.[current]??0);
-  const cycleStart=Number(s.progress_start_count??0);
-  const since=count-cycleStart;
-  return {count,current,needed,cycleStart,since};
+  return {count,current,needed,cycleStart:0,since:count};
 }
 
 function render(){
@@ -327,7 +325,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.3",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.4",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
@@ -448,7 +446,7 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
   else q=await c.from('students').insert(payload).select('id').single();
   if(q.error){err.textContent='No se pudo guardar: '+q.error.message;return}
   if(!studentId) studentId=q.data.id;
-  await c.from("students").update({progress_start_count:v13ProgressCount(studentId)}).eq("id",studentId);
+  
 
   const file=photoInput.files?.[0];
   if(file){
