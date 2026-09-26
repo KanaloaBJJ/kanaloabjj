@@ -249,6 +249,26 @@ function v13TeacherBlock(){
  </div>`;
 }
 
+
+function v13ProgressAttendances(studentId){
+  return (att||[]).filter(a=>{
+    if(String(a.student_id)!==String(studentId)) return false;
+    const sess=v13GetSession(a.date,a.slot);
+    return !(sess && String(sess.teacher_id)===String(studentId));
+  });
+}
+function v13ProgressCount(studentId){
+  return v13ProgressAttendances(studentId).length;
+}
+function v13ProgressForStudent(s){
+  const count=v13ProgressCount(s.id);
+  const current=Number(s.grade||0);
+  const needed=Number((rules||{})[s.belt]?.[current]??0);
+  const cycleStart=Number(s.progress_start_count??0);
+  const since=count-cycleStart;
+  return {count,current,needed,cycleStart,since};
+}
+
 function render(){
  $("dashboard").innerHTML=`<div class="grid"><div class="card"><div class="muted">Alumnos</div><div class="stat">${students.length}</div></div><div class="card"><div class="muted">Asistencias hoy</div><div class="stat">${att.filter(a=>a.date===new Date().toISOString().slice(0,10)).length}</div></div><div class="card"><div class="muted">Total sesiones</div><div class="stat">${att.length}</div></div></div><div id="v11-alerts"></div><div class="card"><h3>🚨 Avisos</h3>${students.map(s=>{let p=prog(s),d=days(last(s.id));return p.pct>=100||d>=settings.inactivity_days?`<div class="student"><span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade}</span></span><span>${p.pct>=100?(p.isBelt?"🥋 Preparado para cinturón "+p.nextBelt:"Grado alcanzado"):d+" días sin venir"}</span></div>`:""}).join("")||"<p class='muted'>Sin avisos.</p>"}</div><div class="card"><button onclick="logout()">Cerrar sesión</button></div>`;
  v11RenderAlerts();
@@ -307,7 +327,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.2",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.3",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
@@ -428,6 +448,7 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
   else q=await c.from('students').insert(payload).select('id').single();
   if(q.error){err.textContent='No se pudo guardar: '+q.error.message;return}
   if(!studentId) studentId=q.data.id;
+  await c.from("students").update({progress_start_count:v13ProgressCount(studentId)}).eq("id",studentId);
 
   const file=photoInput.files?.[0];
   if(file){
