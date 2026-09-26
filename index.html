@@ -191,8 +191,8 @@ if(ct.error && !String(ct.error.message||"").toLowerCase().includes("relation"))
 function t(b){return rules[b]||[30,30,30,30,30]}function total(id){return att.filter(a=>a.student_id===id && !(v13GetSession(a.date,a.slot)?.teacher_id===id)).length}function last(id){return att.filter(a=>a.student_id===id && !(v13GetSession(a.date,a.slot)?.teacher_id===id)).map(a=>a.date).sort().at(-1)||null}
 function prog(s){
  let z=t(s.belt),g=Math.max(0,Math.min(4,Number(s.grade)||0));
- let prior=z.slice(0,g).reduce((a,b)=>a+(Number(b)||0),0);
- let need=Number(z[g])||0,done=Math.max(0,total(s.id)-prior);
+ let need=Number(z[g])||0;
+ let done=v13ProgressCount(s.id);
  let bi=belts.indexOf(s.belt),next=bi>=0&&bi<belts.length-1?belts[bi+1]:null;
  return{done,need,pct:need?Math.min(100,Math.round(done/need*100)):100,nextBelt:g===4?next:null,isBelt:g===4&&!!next};
 }
@@ -290,7 +290,7 @@ function render(){
 function card(s){
  let p=prog(s),l=last(s.id);
  let progress=p.isBelt?`${p.done}/${p.need} para cinturón ${p.nextBelt}`:
-   (s.belt==="Negro"&&Number(s.grade)===4?`${total(s.id)} asistencias totales`:`${p.done}/${p.need}`);
+   (s.belt==="Negro"&&Number(s.grade)===4?`${p.done} asistencias`:`${p.done}/${p.need}`);
  return `<div class="student" style="cursor:pointer" onclick="studentHistory('${s.id}')"><span class="v12-photo-row">${s.photo_url?`<img class="v12-photo" src="${esc(s.photo_url)}" alt="">`:`<span class="v12-photo v12-photo-placeholder">👤</span>`}<span><b>${esc(s.name)}</b><br><span class="small">${s.belt} · grado ${s.grade} · ${progress} · ${l?"última "+l:"sin asistencia"}</span></span></span><button class="secondary" onclick="event.stopPropagation();edit('${s.id}')">Editar</button></div>`
 }
 function v13TeacherNameFor(dateValue,slotValue){const cs=v13GetSession(dateValue,slotValue);return cs?.teacher_id?students.find(s=>String(s.id)===String(cs.teacher_id))?.name||"Profesor":null}
@@ -325,7 +325,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.4",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.5",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
