@@ -323,7 +323,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.6",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.7",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
@@ -438,7 +438,7 @@ if(document.readyState==="loading") document.addEventListener("DOMContentLoaded"
   e.preventDefault(); err.textContent='';
   const c=window.sb||sb||window.bjjSupabaseClient;if(!c){err.textContent='No hay conexión con Supabase.';return}
   const fn=first.value.trim(), ln=last.value.trim(); if(!fn){err.textContent='Escribe el nombre.';return}
-  const payload={name:(fn+' '+ln).trim(),first_name:fn,last_name:ln,belt,grade,birth_date:document.getElementById('v11-birth-date').value||null,phone:document.getElementById('v11-phone').value.trim()||null,has_insurance:insurance};
+  const payload={student_type:'adult',name:(fn+' '+ln).trim(),first_name:fn,last_name:ln,belt,grade,birth_date:document.getElementById('v11-birth-date').value||null,phone:document.getElementById('v11-phone').value.trim()||null,has_insurance:insurance};
   let studentId=sid.value||null, q;
   if(studentId) q=await c.from('students').update(payload).eq('id',studentId);
   else q=await c.from('students').insert(payload).select('id').single();
