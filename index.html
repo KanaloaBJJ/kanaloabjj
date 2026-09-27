@@ -323,7 +323,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.7",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.8",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
