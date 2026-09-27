@@ -118,7 +118,15 @@ header .brand-head h1{margin:0}
 .v13-teacher-label{font-weight:800;margin-bottom:7px;display:block}
 .v13-teacher-note{font-size:12px;color:#6b7280;margin-top:5px}
 </style>
-<style>.v13-history-teacher{font-size:13px;color:#4b5563;margin:5px 0 10px}.v13-teacher-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:700}.v13-history-section{margin-top:18px}</style></head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
+<style>.v13-history-teacher{font-size:13px;color:#4b5563;margin:5px 0 10px}.v13-teacher-pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:700}.v13-history-section{margin-top:18px}</style>
+<script id="adult-filter-v139">
+window.getAdultStudents=function(rows){
+  return (rows||[]).filter(function(x){
+    return !x.student_type || x.student_type==='adult';
+  });
+};
+</script>
+</head><body class="v8-auth-pending"><div id="v8-auth-overlay"><div id="v8-auth-card">
 <img id="v8-auth-logo" class="brand-logo" src="kanaloa-logo.png?v=13.1" alt="Kanaloa Fight Academy">
 <h1>Kanaloa BJJ</h1><p>Acceso privado de la academia</p>
 <form id="v8-auth-form">
@@ -179,7 +187,7 @@ async function load(){let [s,a,r,x,ct]=await Promise.all([
 ]);
 if(ct.error && !String(ct.error.message||"").toLowerCase().includes("relation")){
  throw Error(ct.error.message);
-}let er=[s,a,r,x].find(q=>q.error);if(er)throw Error(er.error.message);students=s.data||[];
+}let er=[s,a,r,x].find(q=>q.error);if(er)throw Error(er.error.message);students=window.getAdultStudents(s.data||[]);
   for(const st of students){
     st.photo_url=null;
     if(st.photo_path){
@@ -323,7 +331,7 @@ async function logout(){await sb.auth.signOut()}
 async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.8",{updateViaCache:"none"}).then(r=>r.update());
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.9",{updateViaCache:"none"}).then(r=>r.update());
 </script><script id="v8-auth-script">
 (function(){
 const ALLOWED="kanaloacalafell@gmail.com";
