@@ -328,7 +328,7 @@ function addStudent(){ window.openV10StudentForm(null); }
 function edit(id){ let s=students.find(x=>x.id===id); window.openV10StudentForm(s); }
 async function saveRules(){for(let b of belts){let v=[0,1,2,3,4].map(i=>parseInt($("r"+b+i).value,10)||1);let q=await sb.from("belt_rules").upsert({belt:b,grade1:v[0],grade2:v[1],grade3:v[2],grade4:v[3],next_belt:v[4]});if(q.error)return toast(q.error.message)}let q=await sb.from("app_settings").upsert({id:1,inactivity_days:parseInt($("inact").value,10)||21});if(q.error)toast(q.error.message);else{await load();toast("Reglas guardadas.",true);render()}}
 async function logout(){await sb.auth.signOut()}
-async function boot(){ $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");try{await load();setView("dashboard")}catch(e){toast(e.message)}}
+async function boot(){   $("auth").classList.add("hidden");   $("app").classList.remove("hidden");   $("nav").classList.remove("hidden");    setView("dashboard");    try{     await load();     render();   }catch(e){     toast(e.message);   } }
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
 if(!U||!K)showConfig();else{sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true}});$("login").onclick=login;$("signup").onclick=signup;sb.auth.onAuthStateChange((_e,s)=>s?boot():showAuth());sb.auth.getSession().then(x=>x.data.session?boot():showAuth())}
 if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js?v=13.9",{updateViaCache:"none"}).then(r=>r.update());
