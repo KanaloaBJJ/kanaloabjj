@@ -323,7 +323,7 @@ async function classHistory(d){
    ${section("afternoon","🌇 Tarde")}
  </div>`;
 }
-async function toggle(id){if(v13GetSession(date,slot)?.teacher_id===id){toast("El profesor de esta clase no cuenta como alumno.");return}let e=att.find(a=>a.student_id===id&&a.date===date&&a.slot===slot);let q=e?await sb.from("attendance").delete().eq("id",e.id):await sb.from("attendance").insert({student_id:id,date,slot});if(q.error)toast(q.error.message);else{await load();render()}}
+async function toggle(id){   if(v13GetSession(date,slot)?.teacher_id===id){     toast("El profesor de esta clase no cuenta como alumno.");     return;   }    let e=att.find(a=>a.student_id===id&&a.date===date&&a.slot===slot);    if(e){     const q=await sb.from("attendance").delete().eq("id",e.id);      if(q.error){       toast(q.error.message);       return;     }      att=att.filter(a=>a.id!==e.id);   }else{     const q=await sb.from("attendance")       .insert({student_id:id,date,slot})       .select()       .single();      if(q.error){       toast(q.error.message);       return;     }      att.push(q.data);   }    render(); }
 function addStudent(){ window.openV10StudentForm(null); }
 function edit(id){ let s=students.find(x=>x.id===id); window.openV10StudentForm(s); }
 async function saveRules(){for(let b of belts){let v=[0,1,2,3,4].map(i=>parseInt($("r"+b+i).value,10)||1);let q=await sb.from("belt_rules").upsert({belt:b,grade1:v[0],grade2:v[1],grade3:v[2],grade4:v[3],next_belt:v[4]});if(q.error)return toast(q.error.message)}let q=await sb.from("app_settings").upsert({id:1,inactivity_days:parseInt($("inact").value,10)||21});if(q.error)toast(q.error.message);else{await load();toast("Reglas guardadas.",true);render()}}
