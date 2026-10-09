@@ -346,7 +346,11 @@ async function boot(){
  window.bjjSupabaseClient=client;
  const {data:{session}}=await client.auth.getSession();
  if(session?.user?.email?.toLowerCase()===ALLOWED) show(); else login("");
- client.auth.onAuthStateChange((_e,s)=>s?.user?.email?.toLowerCase()===ALLOWED?show():login(""));
+ client.auth.onAuthStateChange((_e,s)=>{
+  if(!s){
+    login("");
+  }
+});
  form.addEventListener("submit",async e=>{
   e.preventDefault(); err.textContent="";
   if(email.value.trim().toLowerCase()!==ALLOWED){err.textContent="Usa el email de la academia.";return}
