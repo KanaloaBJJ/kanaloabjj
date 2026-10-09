@@ -188,13 +188,15 @@ async function load(){let [s,a,r,x,ct]=await Promise.all([
 if(ct.error && !String(ct.error.message||"").toLowerCase().includes("relation")){
  throw Error(ct.error.message);
 }let er=[s,a,r,x].find(q=>q.error);if(er)throw Error(er.error.message);students=window.getAdultStudents(s.data||[]);
-  for(const st of students){
-    st.photo_url=null;
-    if(st.photo_path){
-      const sr=await sb.storage.from("student-photos").createSignedUrl(st.photo_path,3600);
-      if(!sr.error)st.photo_url=sr.data?.signedUrl||null;
-    }
+  await Promise.all(students.map(async st=>{
+  st.photo_url=null;
+  if(st.photo_path){
+    const sr=await sb.storage
+      .from("student-photos")
+      .createSignedUrl(st.photo_path,3600);
+    if(!sr.error)st.photo_url=sr.data?.signedUrl||null;
   }
+}));
   att=a.data||[];classSessions=ct?.data||[];rules={};(r.data||[]).forEach(q=>rules[q.belt]=[q.grade1,q.grade2,q.grade3,q.grade4,q.next_belt]);if(x.data)settings=x.data;$("sub").textContent=settings.academy_name+" · datos online"}
 function t(b){return rules[b]||[30,30,30,30,30]}function total(id){return (att||[]).filter(a=>String(a.student_id)===String(id) && !(v13GetSession(a.date,a.slot)?.teacher_id!=null && String(v13GetSession(a.date,a.slot).teacher_id)===String(id))).length}function last(id){return att.filter(a=>a.student_id===id && !(v13GetSession(a.date,a.slot)?.teacher_id===id)).map(a=>a.date).sort().at(-1)||null}
 function prog(s){
